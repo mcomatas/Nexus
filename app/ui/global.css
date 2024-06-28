@@ -1,0 +1,29 @@
+li {
+    display: inline;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: rgb(97, 123, 134);
+}
+
+.main {
+    display: flex;
+    max-width: 1200px;
+    margin: 30px auto;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.menuItems {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 45%;
+    background-color: rgb(96, 255, 96);
+}

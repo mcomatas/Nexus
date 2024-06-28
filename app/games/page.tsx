@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 export default function Page() {
     return (
-        <div className="main">
-            <h1>Welcome to the Nexus homepage!</h1>
+        <div>
+            <h1>Games page</h1>
         </div>
     )
 }
