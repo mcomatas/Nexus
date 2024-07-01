@@ -10,6 +10,11 @@ import styled from 'styled-components'
 const NavbarLink = styled(Link)`
     color: blue;
     text-decoration: none;
+    &:hover {
+        a {
+            
+        }
+    }
 `
 
 const LinkItem = ({href, children, ...props}) => {
