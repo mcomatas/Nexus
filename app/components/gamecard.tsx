@@ -9,8 +9,10 @@ const GameItem = styled(Image)`
     border-radius: 15px;
 `
 
-export const GameCard = ({src, alt}) => {
+export const GameCard = ({src, alt, slug}) => {
     return (
-        <GameItem src={src} alt={alt} height={350} width={263} quality={100} />
+        <Link href={`/games/${slug}`}>
+            <GameItem src={src} alt={alt} height={350} width={263} quality={100} />
+        </Link>
     )
 }
