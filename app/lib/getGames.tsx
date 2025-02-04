@@ -1,8 +1,10 @@
 import getAccessToken from "./getAccessToken";
 
 // Function to get a list of games from IGDB API
-export default async function getGames() {
+export default async function getGames(query: string) {
     const access_token = await getAccessToken();
+    //console.log(query);
+    //const params = "fields name, cover.url, slug;"
     try {
         const response = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
@@ -11,11 +13,11 @@ export default async function getGames() {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
                 'Authorization': `Bearer ${access_token}`
             },
-            body: "fields cover.url, slug; limit 10;"
+            body: query.length > 0 ? `search "${query}"; fields name, cover.url, slug;` : 'fields name, cover.url, slug; limit 8;'
         });
 
         if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+            throw new Error(`Response status: ${response.status} ${response.statusText}`);
         }
 
         return response.json();

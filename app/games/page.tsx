@@ -11,8 +11,20 @@ function makeRow(games) {
     return row;
 }
 
-export default async function Page() {
-    const data = await getGames();
+export default async function Page(props: {
+    searchParams?: Promise<{
+        query?: string;
+    }>;
+}) {
+
+    const searchParams = await props.searchParams;
+    const query = searchParams?.query || '';
+
+    //console.log(searchParams);
+    //console.log(query);
+
+    const data = await getGames(query);
+    console.log(data);
     const data2d = [];
     // I think this will have to be changed later for mobile viewing
     while (data.length) data2d.push(data.splice(0,4)); // Make a 2D array with rows fo length 4
