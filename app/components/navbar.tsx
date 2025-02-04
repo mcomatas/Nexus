@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import '../ui/global.css'
 import { inter, rowdies } from '../ui/fonts'
 import styled from 'styled-components'
+import Search from '../ui/search'
 
 //have a Link Item here for more stylization than just Nextjs Link
 const NavbarLink = styled(Link)`
@@ -39,7 +40,7 @@ const Navbar = () => {
             <div className="menuItems">
                 <LinkItem href="/games">Games</LinkItem>
                 <p>Item2</p>
-                <p>Item3</p>
+                <Search placeholder='Game'/>
                 <p>{path}</p>
             </div>
         </div>
