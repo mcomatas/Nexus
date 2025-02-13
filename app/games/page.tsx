@@ -1,12 +1,17 @@
 import Link from 'next/link';
 import { GameCard } from '../components/gamecard'
-import getAccessToken from '../lib/getAccessToken'
+//import getAccessToken from '../lib/getAccessToken'
 import getGames from '../lib/getGames';
+import Pagination from '../ui/pagination';
+
+const PAGE_SIZE = 8;
 
 // Creates GameCard components 
 function makeRow(games) {
     const row = games.map((game) => 
-        <li key={game.id}><GameCard src={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"} alt={game.slug} slug={game.slug}/></li>
+        <li key={game.id}>
+            <GameCard src={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"} alt={game.slug} slug={game.slug}/>
+        </li>
     )
     return row;
 }
@@ -14,17 +19,20 @@ function makeRow(games) {
 export default async function Page(props: {
     searchParams?: Promise<{
         query?: string;
+        page?: number;
     }>;
 }) {
 
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
+    const page = searchParams?.page || 1;
 
     //console.log(searchParams);
     //console.log(query);
+    //console.log(page)
 
-    const data = await getGames(query);
-    console.log(data);
+    const data = await getGames(query, page);
+    //console.log(data);
     const data2d = [];
     // I think this will have to be changed later for mobile viewing
     while (data.length) data2d.push(data.splice(0,4)); // Make a 2D array with rows fo length 4
@@ -37,7 +45,10 @@ export default async function Page(props: {
     return (
         <div>
             <h1>Games page</h1>
-            {games}       
+            {games} 
+
+            {/*Pagination Controls*/}
+            <Pagination />
         </div>
     )
 }

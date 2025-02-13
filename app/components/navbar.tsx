@@ -40,7 +40,7 @@ const Navbar = () => {
             <div className="menuItems">
                 <LinkItem href="/games">Games</LinkItem>
                 <p>Item2</p>
-                <Search placeholder='Game'/>
+                <Search placeholder='Search Game'/>
                 <p>{path}</p>
             </div>
         </div>
