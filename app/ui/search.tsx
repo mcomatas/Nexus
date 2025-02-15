@@ -1,6 +1,5 @@
 'use client';
 
-//import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -9,7 +8,8 @@ export default function Search({ placeholder }: { placeholder: string }) {
     const pathname = usePathname();
     const { replace } = useRouter();
     
-    const handleSearch = useDebouncedCallback((term) => {
+    //This handles search for every key stroke with debouncing
+    /*const handleSearch = useDebouncedCallback((term) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', '1')
         if (term) {
@@ -19,15 +19,30 @@ export default function Search({ placeholder }: { placeholder: string }) {
         }
         replace(`${pathname}?${params.toString()}`);
         //console.log(term);
-    }, 500);
+    }, 500);*/
+
+    //This handles search based on hitting the 'Enter' key
+    const handleSearch = ((term) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('page', '1');
+        params.set('query', term);
+        replace(`${pathname}?${params.toString()}`);
+    });
+
+    const onKeyDown = (e) => {
+        if(e.key === "Enter") {
+            handleSearch(e.target.value);
+        }
+    }
 
     return (
         <div>
             <input 
                 placeholder={placeholder}
-                onChange={(e) => {
+                /*onChange={(e) => {
                     handleSearch(e.target.value);
-                }}
+                }}*/
+                onKeyDown={(e) => onKeyDown(e)}
                 defaultValue={searchParams.get('query')?.toString()}
             />
         </div>
