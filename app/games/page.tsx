@@ -4,8 +4,6 @@ import { GameCard } from '../components/gamecard'
 import getGames from '../lib/getGames';
 import Pagination from '../ui/pagination';
 
-const PAGE_SIZE = 8;
-
 // Creates GameCard components 
 function makeRow(games) {
     const row = games.map((game) => 
@@ -31,12 +29,12 @@ export default async function Page(props: {
     //console.log(query);
     //console.log(page)
 
-    const data = await getGames(query, page);
-    //console.log(data);
+    const { games, count } = await getGames(query, page);
+    //console.log(count);
     const data2d = [];
     // I think this will have to be changed later for mobile viewing
-    while (data.length) data2d.push(data.splice(0,4)); // Make a 2D array with rows fo length 4
-    const games = data2d.map((row, index) => 
+    while (games.length) data2d.push(games.splice(0,4)); // Make a 2D array with rows fo length 4
+    const gamesArray = data2d.map((row, index) => 
         <div className='main' key={index}>
             {makeRow(row)}
         </div>
@@ -45,10 +43,10 @@ export default async function Page(props: {
     return (
         <div>
             <h1>Games page</h1>
-            {games} 
+            {gamesArray} 
 
             {/*Pagination Controls*/}
-            <Pagination />
+            <Pagination totalCount={count}/>
         </div>
     )
 }

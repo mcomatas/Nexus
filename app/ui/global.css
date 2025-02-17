@@ -17,7 +17,7 @@ li {
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     background-color: rgb(97, 123, 134);
 }

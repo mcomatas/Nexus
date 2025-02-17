@@ -1,11 +1,13 @@
 'use client'
 
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { PAGE_SIZE } from '../lib/getGames';
 
-export default function Pagination() {
+export default function Pagination({ totalCount }: { totalCount: number }) {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
+    
     const currentPage = Number(searchParams.get('page')) || 1;
 
     const createPageURL = (pageNumber: number | string) => {
@@ -24,10 +26,30 @@ export default function Pagination() {
         replace(url);
     }
 
+    const setPage = (page: number) => {
+        const url = createPageURL(page);
+        replace(url);
+    }
+
+    const maxPageButtons = 7;
+    const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    //Adjust range if near the end
+    if (endPage - startPage < maxPageButtons - 1) {
+        startPage = Math.max(1, endPage - maxPageButtons - 1);
+    }
+
+    const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);    
+
     return (
-        <div>
-            <button onClick={previousPage}>Previous</button>
-            <button onClick={nextPage}>Next</button>
+        <div className='main'>
+            {currentPage > 1 && <button onClick={previousPage}>Previous</button>}
+            {pages.map((num) => (
+                <button key={num} onClick={() => setPage(num)}>{num}</button>
+            ))}
+            {currentPage < totalPages && <button onClick={nextPage}>Next</button>}
         </div>
     )
 

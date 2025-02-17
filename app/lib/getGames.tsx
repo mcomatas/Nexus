@@ -1,38 +1,56 @@
 import getAccessToken from "./getAccessToken";
 //import { useState, useEffect } from "react";
 
-const PAGE_SIZE = 8;
+export const PAGE_SIZE = 16;
+
+type GamesResponse = {
+    games: any[];
+    count: number;
+}
 
 // Function to get a list of games from IGDB API
-export default async function getGames(query: string, page: number) {
+export default async function getGames(query: string, page: number): Promise<GamesResponse> {
     const access_token = await getAccessToken();
-    //const [games, setGames] = useState([]);
-    //const [page, setPage] = useState(1);
-    //const [totalGames, setTotalGames] = useState(0);
-    const offset = (page - 1) * PAGE_SIZE; //8 is page size
-    //console.log(query);
-    //const params = "fields name, cover.url, slug;"
+    const offset = (page - 1) * PAGE_SIZE;
+    const body = query.length > 0 
+                ? `search "${query}"; fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset}; where rating > 0;`
+                : `fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset}; where rating > 0;`
+
     try {
-        const response = await fetch("https://api.igdb.com/v4/games", {
+        const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Client-ID': process.env.IGDB_CLIENT_ID,
                 'Authorization': `Bearer ${access_token}`
             },
-            body: query.length > 0 
-                ? `search "${query}"; fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset};`
-                : `fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset};`
+            body: body
         });
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status} ${response.statusText}`);
+        if (!gamesResponse.ok) {
+            throw new Error(`gamesResponse status: ${gamesResponse.status} ${gamesResponse.statusText}`);
         }
 
-        return response.json();
+        const games = await gamesResponse.json();
+        //return gamesResponse.json();
+
+        const countResponse = await fetch("https://api.igdb.com/v4/games/count", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Client-ID': process.env.IGDB_CLIENT_ID,
+                'Authorization': `Bearer ${access_token}`
+            },
+            body: body
+        });
+
+        const { count } = await countResponse.json();
+
+        //console.log(games, count);
+        return { games, count };
 
     } catch (error) {
         console.log(error.message);
-        return [];
+        return { games: [], count: 0 };
     }
 }
