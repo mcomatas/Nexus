@@ -46,9 +46,11 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
     return (
         <div className='main'>
             {currentPage > 1 && <button onClick={previousPage}>Previous</button>}
+            {currentPage > 1 + 3 && <button onClick={() => setPage(1)}>1</button>}
             {pages.map((num) => (
                 <button key={num} onClick={() => setPage(num)}>{num}</button>
             ))}
+            {currentPage < totalPages - 3 && <button onClick={() => setPage(totalPages)}>{totalPages}</button>}
             {currentPage < totalPages && <button onClick={nextPage}>Next</button>}
         </div>
     )
