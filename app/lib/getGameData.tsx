@@ -12,7 +12,7 @@ export default async function getGameData(slug: string) {
                 'Authorization': `Bearer ${access_token}`
             },
             body: `
-                fields cover.url, slug, name;
+                fields cover.url, slug, name, storyline, summary, artworks.url;
                 where slug = "${slug}";
             `
         });
