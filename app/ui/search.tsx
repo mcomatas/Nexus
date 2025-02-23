@@ -26,12 +26,13 @@ export default function Search({ placeholder }: { placeholder: string }) {
         const params = new URLSearchParams(searchParams);
         params.set('page', '1');
         params.set('query', term);
-        replace(`${pathname}?${params.toString()}`);
+        replace(`/games?${params.toString()}`);
     });
 
     const onKeyDown = (e) => {
         if(e.key === "Enter") {
             handleSearch(e.target.value);
+            e.target.value = ""; // Make search bar return to empty string after hitting enter
         }
     }
 
