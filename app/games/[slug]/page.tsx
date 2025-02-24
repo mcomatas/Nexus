@@ -11,6 +11,7 @@ export default async function Page({params: {slug}}) {
             <div>
                 {game[0].name}
                 <br />
+                <br />
                 {game[0].storyline || game[0].summary}
             </div>
         </div>

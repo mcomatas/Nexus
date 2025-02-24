@@ -42,7 +42,7 @@ export default async function Page(props: {
 
     return (
         <div>
-            <h1>Games page</h1>
+            <h1 className='gameHeading'>Games page</h1>
             {gamesArray} 
 
             {/*Pagination Controls*/}
