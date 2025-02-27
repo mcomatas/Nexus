@@ -12,7 +12,7 @@ const GameItem = styled(Image)`
 export const GameCard = ({src, alt, slug}) => {
     return (
         <Link href={`/games/${slug}`}>
-            <GameItem src={src} alt={alt} height={350} width={263} quality={100} />
+            <Image className="rounded-lg border-black border-solid border-2 aspect-9/12" src={src} alt={alt} height={350} width={263} quality={100} />
         </Link>
     )
 }

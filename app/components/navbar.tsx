@@ -35,11 +35,10 @@ const Navbar = () => {
     const path = usePathname()
     
     return (
-        <div className="container" style={rowdies.style}>
-            <Link href="/"><h1>Nexus</h1></Link>
-            <div className="menuItems">
+        <div className="flex justify-evenly items-center max-w-2/5 mx-auto p-2">
+            <Link href="/" className="text-xl"><h1>Nexus</h1></Link>
+            <div className="flex justify-evenly items-center gap-x-5">
                 <LinkItem href="/games">Games</LinkItem>
-                <p>Item2</p>
                 <Search placeholder='Search Game'/>
                 <p>{path}</p>
             </div>

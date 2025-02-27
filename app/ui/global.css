@@ -1,4 +1,6 @@
-* {
+@import "tailwindcss";
+
+/* * {
     -ms-overflow-style: none;
 }
 
@@ -53,3 +55,12 @@ li {
     align-items: flex-start;
     background-color: lightgray;
 }
+
+.gameGrid {
+    display: grid;
+    margin: 0 auto;
+    justify-content: center;
+    grid-template-columns: auto auto auto auto;
+    column-gap: 50px;
+    row-gap: 25px;
+} */

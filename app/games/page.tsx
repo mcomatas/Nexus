@@ -31,19 +31,28 @@ export default async function Page(props: {
 
     const { games, count } = await getGames(query, page);
     //console.log(count);
+
+    const gamesArray = games.map((game) => 
+        <div key={game.id}>
+            <GameCard src={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"} alt={game.slug} slug={game.slug}/>
+        </div>
+    )
+
     const data2d = [];
     // I think this will have to be changed later for mobile viewing
-    while (games.length) data2d.push(games.splice(0,4)); // Make a 2D array with rows fo length 4
+    /*while (games.length) data2d.push(games.splice(0,4)); // Make a 2D array with rows fo length 4
     const gamesArray = data2d.map((row, index) => 
         <div className='main' key={index}>
             {makeRow(row)}
         </div>
-    )
+    )*/
 
     return (
         <div>
-            <h1 className='gameHeading'>Games page</h1>
-            {gamesArray} 
+            <h1 className="flex max-w-4/5 mx-auto text-xl">Games page</h1>
+            <div className="grid grid-cols-4 gap-2 p-1 place-items-center max-w-4/5 mx-auto">
+                {gamesArray}
+            </div> 
 
             {/*Pagination Controls*/}
             <Pagination totalCount={count}/>
