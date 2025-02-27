@@ -48,13 +48,7 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
             {currentPage > 1 && <button onClick={previousPage}>Previous</button>}
             {currentPage > 1 + 3 && <button onClick={() => setPage(1)}>1</button>}
             {pages.map((num) => (
-                <button 
-                    className={`aspect-square rounded-md w-8 ${currentPage === num ? "bg-fuchsia-400" : "bg-slate-400"}`}
-                    key={num}
-                    onClick={() => setPage(num)}
-                >
-                    {num}
-                </button>
+                <button key={num} onClick={() => setPage(num)}>{num}</button>
             ))}
             {currentPage < totalPages - 3 && <button onClick={() => setPage(totalPages)}>{totalPages}</button>}
             {currentPage < totalPages && <button onClick={nextPage}>Next</button>}

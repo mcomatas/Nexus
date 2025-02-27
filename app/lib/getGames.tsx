@@ -1,7 +1,7 @@
 import getAccessToken from "./getAccessToken";
 //import { useState, useEffect } from "react";
 
-export const PAGE_SIZE = 16;
+export const PAGE_SIZE = 32;
 
 type GamesResponse = {
     games: any[];
@@ -12,9 +12,10 @@ type GamesResponse = {
 export default async function getGames(query: string, page: number): Promise<GamesResponse> {
     const access_token = await getAccessToken();
     const offset = (page - 1) * PAGE_SIZE;
+    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
     const body = query.length > 0 
-                ? `search "${query}"; fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset}; where rating > 0;`
-                : `fields name, cover.url, slug; limit ${PAGE_SIZE}; offset ${offset}; where rating > 0;`
+                ? `search "${query}"; ${bodyMain}`
+                : `${bodyMain}`
 
     try {
         const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
