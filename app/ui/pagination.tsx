@@ -41,17 +41,50 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
         startPage = Math.max(1, endPage - maxPageButtons - 1);
     }
 
-    const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);    
+    const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    
+    //const buttonStyle = `w-22 rounded-md bg-zinc-500`;
+
+    const prevDisabled = currentPage === 1;
+    const nextDisabled = currentPage === totalPages;
 
     return (
-        <div className="flex flex-row justify-evenly max-w-4/5 mx-auto p-2">
-            {currentPage > 1 && <button onClick={previousPage}>Previous</button>}
+        <div className="flex flex-row justify-evenly max-w-4/5 mx-auto p-10">
+            
+            <button 
+                className={`rounded-md w-22 ${prevDisabled ? 'bg-zinc-500' : 'bg-fuchsia-300'}`} 
+                disabled={prevDisabled} 
+                onClick={previousPage}
+            >
+                Previous
+            </button>
+            {currentPage > 1 + 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(1)}>1</button>}
+            {pages.map((num) => (
+                <button 
+                    className={`rounded-md h-10 w-20 ${currentPage === num ? 'bg-fuchsia-300' : 'bg-zinc-300'}`} 
+                    onClick={() => setPage(num)}
+                >
+                    {num}
+                </button>
+            ))}
+            {currentPage < totalPages - 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(totalPages)}>{totalPages}</button>}
+            <button
+                className={`rounded-md w-22 ${nextDisabled ? 'bg-zinc-500' : 'bg-fuchsia-300'}`}
+                disabled={nextDisabled}    
+                onClick={nextPage}
+            >
+                Next
+            </button>
+
+
+            {/* Old button format */}
+            {/*{currentPage > 1 && <button onClick={previousPage}>Previous</button>}
             {currentPage > 1 + 3 && <button onClick={() => setPage(1)}>1</button>}
             {pages.map((num) => (
                 <button key={num} onClick={() => setPage(num)}>{num}</button>
             ))}
             {currentPage < totalPages - 3 && <button onClick={() => setPage(totalPages)}>{totalPages}</button>}
-            {currentPage < totalPages && <button onClick={nextPage}>Next</button>}
+            {currentPage < totalPages && <button onClick={nextPage}>Next</button>}*/}
         </div>
     )
 
