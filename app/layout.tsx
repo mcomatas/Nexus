@@ -1,6 +1,6 @@
 import Navbar from './components/navbar'
 import './ui/global.css'
-import { rowdies } from './ui/fonts'
+import { openSans } from './ui/fonts'
 
 export default function RootLayout({
   children,
@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={rowdies.style}>
+      <body style={openSans.style}>
         <Navbar />
           <main>
             {children}
