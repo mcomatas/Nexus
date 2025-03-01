@@ -23,7 +23,7 @@ const NavbarLink = ({href, children, ...props}) => {
     //const path = usePathname()
     return (
             <Link
-                className='text-lg txt-gray-700'
+                className='text-lg text-neutral-100 hover:bg-fuchsia-300 transition rounded-2xl p-2'
                 href={href}
             >
                 {children}
@@ -36,9 +36,9 @@ const Navbar = () => {
     const path = usePathname()
     
     return (
-        <div className="w-full bg-gray-200 border-b border-gray-400">
+        <div className="w-full bg-linear-to-t from-slate-500 from-20% to-gray-400 border-b border-gray-400">
             <div className="flex justify-between items-center max-w-4xl mx-auto p-4">
-                <Link href="/" className="text-2xl font-bold text-gray-700"><h1>Nexus</h1></Link>
+                <Link href="/" className="text-2xl font-bold text-neutral-100">Nexus</Link>
                 <div className="flex justify-evenly items-center gap-x-6">
                     <NavbarLink href="/games">Games</NavbarLink>
                     <Search placeholder='Search Game'/>

@@ -49,7 +49,7 @@ export default async function Page(props: {
 
     return (
         <div>
-            <h1 className="flex max-w-4/5 mx-auto text-xl">Games page</h1>
+            <h1 className="flex max-w-4/5 mx-auto text-xl p-2">Games page</h1>
             <div className="grid grid-cols-4 gap-2 p-1 place-items-center max-w-4/5 mx-auto">
                 {gamesArray}
             </div> 

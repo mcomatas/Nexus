@@ -42,6 +42,8 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
     }
 
     const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    if (pages[0] !== 1) pages.unshift(1); // Add 1 to the beginning of pages array if it's not in
+    if (pages[pages.length-1] !== totalPages && pages.length > 1) pages.push(totalPages); // Add last page to the end of the pages array if it's not in
     
     //const buttonStyle = `w-22 rounded-md bg-zinc-500`;
 
@@ -52,24 +54,25 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
         <div className="flex flex-row justify-evenly max-w-4/5 mx-auto p-10">
             
             <button 
-                className={`rounded-md w-22 ${prevDisabled ? 'bg-zinc-500' : 'bg-fuchsia-300'}`} 
+                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-500`} 
                 disabled={prevDisabled} 
                 onClick={previousPage}
             >
                 Previous
             </button>
-            {currentPage > 1 + 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(1)}>1</button>}
+            {/*{currentPage > 1 + 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(1)}>1</button>}*/}
             {pages.map((num) => (
                 <button 
-                    className={`rounded-md h-10 w-20 ${currentPage === num ? 'bg-fuchsia-300' : 'bg-zinc-300'}`} 
+                    key={num}
+                    className={`rounded-md h-10 w-20 ${currentPage === num ? 'bg-fuchsia-300' : 'bg-zinc-300'} hover:bg-fuchsia-500 transition`} 
                     onClick={() => setPage(num)}
                 >
                     {num}
                 </button>
             ))}
-            {currentPage < totalPages - 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(totalPages)}>{totalPages}</button>}
+            {/*{currentPage < totalPages - 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(totalPages)}>{totalPages}</button>}*/}
             <button
-                className={`rounded-md w-22 ${nextDisabled ? 'bg-zinc-500' : 'bg-fuchsia-300'}`}
+                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-500`}
                 disabled={nextDisabled}    
                 onClick={nextPage}
             >
