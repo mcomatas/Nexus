@@ -54,7 +54,7 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
         <div className="flex flex-row justify-evenly max-w-4/5 mx-auto p-10">
             
             <button 
-                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-500`} 
+                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-700`} 
                 disabled={prevDisabled} 
                 onClick={previousPage}
             >
@@ -64,7 +64,7 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
             {pages.map((num) => (
                 <button 
                     key={num}
-                    className={`rounded-md h-10 w-20 ${currentPage === num ? 'bg-fuchsia-300' : 'bg-zinc-300'} hover:bg-fuchsia-500 transition`} 
+                    className={`rounded-md h-10 w-20 ${currentPage === num ? 'bg-fuchsia-300' : 'bg-zinc-500'} hover:bg-fuchsia-500 transition`} 
                     onClick={() => setPage(num)}
                 >
                     {num}
@@ -72,7 +72,7 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
             ))}
             {/*{currentPage < totalPages - 3 && <button className='rounded-md h-10 w-20 bg-zinc-300' onClick={() => setPage(totalPages)}>{totalPages}</button>}*/}
             <button
-                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-500`}
+                className={`rounded-md w-22 bg-fuchsia-300 hover:bg-fuchsia-500 transition disabled:bg-zinc-700`}
                 disabled={nextDisabled}    
                 onClick={nextPage}
             >

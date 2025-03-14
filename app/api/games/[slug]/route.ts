@@ -1,15 +1,17 @@
-import getAccessToken from "./getAccessToken";
+import { NextResponse } from "next/server";
+import getAccessToken from "../../../lib/getAccessToken";
 
-export default async function getGameData(slug: string) {
-    const access_token = await getAccessToken();
-    //console.log(access_token);
-    //console.log(slug);
+export async function GET(response: NextResponse, { params }) {
+    const slug = params.slug;
+
+    const accessToken = await getAccessToken();
+
     try {
         const response = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
             headers: {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
-                'Authorization': `Bearer ${access_token}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Access-Control-Allow-Origin': '*'
             },
             body: `
@@ -19,14 +21,17 @@ export default async function getGameData(slug: string) {
         });
 
         if (!response.ok) {
-            //console.log(response.body);
             throw new Error(`Response status: ${response.status}`);
         }
 
         //console.log(await response.json());
-        return response.json();
+        const data = await response.json();
+        return NextResponse.json(data);
 
-    } catch(error) {
+    } catch (error) {
         console.log(error.message);
     }
+
+    //return NextResponse.json({ message: `Hello from ${slug}`, status: 200 })
+    //return new Response(`Hello from ${slug}`)
 }

@@ -7,5 +7,6 @@ export const rowdies = Rowdies({
 });
 export const openSans = Open_Sans({
     weight: ['300', '400', '700'],
-    subsets: ['latin']
+    subsets: ['latin'],
+    display: "swap"
 })

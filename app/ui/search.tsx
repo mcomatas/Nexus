@@ -24,8 +24,8 @@ export default function Search({ placeholder }: { placeholder: string }) {
     //This handles search based on hitting the 'Enter' key
     const handleSearch = ((term) => {
         const params = new URLSearchParams(searchParams);
-        params.set('page', '1');
         params.set('query', term);
+        params.set('page', '1');
         replace(`/games?${params.toString()}`);
     });
 

@@ -12,11 +12,11 @@ type GamesResponse = {
 export default async function getGames(query: string, page: number): Promise<GamesResponse> {
     const access_token = await getAccessToken();
     const offset = (page - 1) * PAGE_SIZE;
-    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset}; sort total_rating_count desc;`
+    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
     const body = query.length > 0 
                 ? `search "${query}"; ${bodyMain}`
-                : `${bodyMain}`
-
+                : `${bodyMain} sort total_rating_count desc;`
+    //console.log(body);
     try {
         const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
