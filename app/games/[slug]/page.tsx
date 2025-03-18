@@ -62,7 +62,7 @@ export default function Page({ params }) {
                     full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
                 />
                 <div className="flex flex-col min-h-screen mx-auto max-w-3/5 p-3">
-                    <h1 className="text-2xl">{game.name}</h1>
+                    <h1 className="text-3xl font-bold">{game.name}</h1>
                     <br />
                     <br />
                     <p 
