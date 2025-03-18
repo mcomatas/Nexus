@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export const ImageModal = ({ thmb, full }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState("");
+    //const [selectedImage, setSelectedImage] = useState("");
 
     useEffect(() => {
         if (isOpen) {
@@ -22,7 +22,7 @@ export const ImageModal = ({ thmb, full }) => {
 
     const closeModal = () => {
         setIsOpen(false);
-        setSelectedImage("");
+        //setSelectedImage("");
     }
     
     return (
@@ -33,13 +33,13 @@ export const ImageModal = ({ thmb, full }) => {
                 height={350}
                 width={263}
                 quality={100}
-                className="rounded-lg border-black border-solid border-2"
+                className="rounded-lg border-black border-solid border-2 hover:scale-105 transition"
                 onClick={openModal}
             />
 
             {isOpen && (
                 <div
-                    className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-50"
+                    className="fixed inset-0 flex items-center justify-center bg-stone-900/80 backdrop-blur-xl z-50"
                     onClick={closeModal}
                 >
                     <Image

@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import getAccessToken from "../../../lib/getAccessToken";
 
-export async function GET(response: NextResponse, { params }) {
+type Params = { slug: string }
+
+export async function GET(request: NextRequest, segmentData: { params: Params }) {
+    const params = await segmentData.params;
     const slug = params.slug;
 
     const accessToken = await getAccessToken();

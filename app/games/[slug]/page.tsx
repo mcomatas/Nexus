@@ -5,10 +5,14 @@ import { GameCard } from "../../components/gamecard";
 import { ImageModal } from '../../components/imageModal'
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useParams } from "next/navigation";
+import { use } from 'react';
 
+export default function Page({ params }) {
+    const obj = use(params);
+    const slug = obj['slug'];
+    //console.log(slug['slug'], typeof(slug));
 
-export default function Page({ params: { slug } }) {
+    //console.log(typeof(slug));    
     //const game = await getGameData(slug);
     //console.log(gameData);
     const [game, setGame] = useState(null);
@@ -35,7 +39,7 @@ export default function Page({ params: { slug } }) {
 
     if (!game) return <p>Loading...</p>
 
-    const art = Math.floor(Math.random() * game.artworks.length);
+    //const art = Math.floor(Math.random() * game.artworks.length);
 
 
     //console.log("game", typeof(game), game);
@@ -48,7 +52,7 @@ export default function Page({ params: { slug } }) {
             {/*{game[0].artworks[0].url}*/}
             {game.artworks && 
                 <div className="flex flex-col h-100 items-center relative">
-                    <Image src={'https:' + game.artworks[0].url.replace('t_thumb', 't_1080p')} alt={slug} layout="fill" style={{ objectFit: 'cover', objectPosition: 'center 20%' }} quality={100}/>
+                    <Image src={'https:' + game.artworks[0].url.replace('t_thumb', 't_1080p')} alt={String(slug)} layout="fill" style={{ objectFit: 'cover', objectPosition: 'center 20%' }} quality={100}/>
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-500 from-10% to-transparent to-50%"/>
                 </div>
             }
