@@ -6,6 +6,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@prisma/client": "^6.5.0",
         "@tailwindcss/postcss": "^4.0.9",
         "eslint-config-next": "^15.2.3",
         "next": "^15.2.3",
@@ -20,6 +21,7 @@
     "devDependencies": {
         "@types/node": "20.14.2",
         "@types/react": "18.3.3",
+        "prisma": "^6.5.0",
         "typescript": "5.4.5"
     }
 }

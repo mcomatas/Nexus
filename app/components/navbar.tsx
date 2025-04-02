@@ -42,7 +42,7 @@ const Navbar = () => {
                 <div className="flex justify-evenly items-center gap-x-6">
                     <NavbarLink href="/games">Games</NavbarLink>
                     <Search placeholder='Search Game'/>
-                    <p>{path}</p>
+                    <NavbarLink href="/login">Login</NavbarLink>
                 </div>
             </div>
         </div>
