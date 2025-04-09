@@ -1,8 +1,12 @@
+'use client'
+
 import Link from 'next/link';
 import { GameCard } from '../components/gamecard'
 //import getAccessToken from '../lib/getAccessToken'
 import getGames from '../lib/getGames';
 import Pagination from '../ui/pagination';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 // Creates GameCard components 
 function makeRow(games) {
@@ -14,22 +18,50 @@ function makeRow(games) {
     return row;
 }
 
-export default async function Page(props: {
+export default function Page(props: {
     searchParams?: Promise<{
         query?: string;
         page?: number;
     }>;
 }) {
 
-    const searchParams = await props.searchParams;
+    const [games, setGames] = useState([]);
+    const [count, setCount] = useState(0);
+    /*const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
-    const page = searchParams?.page || 1;
+    const page = searchParams?.page || 1;*/
 
     //console.log(searchParams);
     //console.log(query);
     //console.log(page)
 
-    const { games, count } = await getGames(query, page);
+    //const { games, count } = await getGames(query, page);
+    useEffect(() => {
+        async function fetchGames() {
+            try {
+                const searchParams = await props.searchParams;
+                //console.log('search params: ', searchParams);
+                const query = searchParams?.query || '';
+                const page = searchParams?.page || 1;
+                const res = await fetch(`/api/games?query=${query}&page=${page}`);
+                const data = await res.json();
+                //console.log(data.games);
+                setGames(data.games);
+                setCount(data.count);
+                //console.log(games);
+                //console.log(data);
+                //const data = await res.json();
+                //console.log(data);
+            } catch (error) {
+                console.log("Error fetching games: ", error);
+            }
+        }
+        fetchGames();
+    }, [props]);
+
+    if (!games || !count) return <p>Loading...</p>
+    //const res = await fetch("/api/games");
+    //console.log(res);
     //console.log(count);
 
     const gamesArray = games.map((game) => 
@@ -38,7 +70,8 @@ export default async function Page(props: {
         </div>
     )
 
-    const data2d = [];
+    //const data2d = [];
+    //console.log(games[0]);
     // I think this will have to be changed later for mobile viewing
     /*while (games.length) data2d.push(games.splice(0,4)); // Make a 2D array with rows fo length 4
     const gamesArray = data2d.map((row, index) => 
@@ -56,7 +89,7 @@ export default async function Page(props: {
             </div>
 
             {/*Pagination Controls*/}
-            <Pagination totalCount={count}/>
+            {<Pagination totalCount={count}/>}
         </div>
     )
 }
