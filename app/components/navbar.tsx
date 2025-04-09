@@ -20,7 +20,6 @@ import Search from '../ui/search'
 
 const NavbarLink = ({href, children, ...props}) => {
     const active = usePathname() === href
-    //const path = usePathname()
     return (
             <Link
                 className='text-lg hover:bg-fuchsia-300 transition rounded-2xl p-2'
@@ -32,9 +31,7 @@ const NavbarLink = ({href, children, ...props}) => {
 }
 
 
-const Navbar = () => {
-    const path = usePathname()
-    
+const Navbar = () => {    
     return (
         <div className="w-full bg-linear-to-t from-slate-500 from-20% to-gray-400 border-b border-gray-400">
             <div className="flex justify-between items-center max-w-4xl mx-auto p-4">

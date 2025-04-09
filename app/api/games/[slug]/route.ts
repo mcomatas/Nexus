@@ -27,7 +27,6 @@ export async function GET(request: NextRequest, segmentData: { params: Params })
             throw new Error(`Response status: ${response.status}`);
         }
 
-        //console.log(await response.json());
         const data = await response.json();
         return NextResponse.json(data);
 
@@ -36,5 +35,4 @@ export async function GET(request: NextRequest, segmentData: { params: Params })
     }
 
     //return NextResponse.json({ message: `Hello from ${slug}`, status: 200 })
-    //return new Response(`Hello from ${slug}`)
 }

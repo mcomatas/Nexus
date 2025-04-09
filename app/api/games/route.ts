@@ -18,15 +18,8 @@ export async function GET(request: NextRequest) {
     const body = query.length > 0 
                 ? `search "${query}"; ${bodyMain}`
                 : `${bodyMain} sort total_rating_count desc;`;
-    //console.log(searchParams.get("query") || '');
-    //console.log(searchParams.get('page') || 1);
 
-    
-    //return NextResponse.json({ message: "Hello", success: true });
     const accessToken = await getAccessToken();
-    //console.log(accessToken);
-    //const params = await segmentData.params;
-    //console.log(params);
     
     try {
         const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
@@ -56,8 +49,6 @@ export async function GET(request: NextRequest) {
         });
 
         const { count } = await countResponse.json();
-        //console.log(count);
-        //console.log(games);
         return NextResponse.json({ games, count })
 
     } catch (error) {

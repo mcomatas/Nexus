@@ -9,12 +9,8 @@ import { use } from 'react';
 
 export default function Page({ params }) {
     const obj = use(params);
-    const slug = obj['slug'];
-    //console.log(slug['slug'], typeof(slug));
-
-    //console.log(typeof(slug));    
+    const slug = obj['slug'];   
     //const game = await getGameData(slug);
-    //console.log(gameData);
     const [game, setGame] = useState(null);
     const [expanded, setExpanded] = useState(false);
 
@@ -23,13 +19,7 @@ export default function Page({ params }) {
             try {
                 const res = await fetch(`/api/games/${slug}`);
                 const data = await res.json();
-                //console.log(data[0]);
                 setGame(data[0]);
-                //console.log(game);
-                //console.log(await res.json());
-                //const data = await res.json();
-                //console.log(data);
-                //console.log(data.message);
             } catch (error) {
                 console.log("Error fetching game:", error)
             }
@@ -41,12 +31,6 @@ export default function Page({ params }) {
 
     //const art = Math.floor(Math.random() * game.artworks.length);
 
-
-    //console.log("game", typeof(game), game);
-    //const game = await getGameData(slug);
-    //console.log(game[0]);
-    //console.log(game[0].name);
-    //className="flex flex-col max-w-1080 h-100 z-0 items-center relative"
     return (
         <div>
             {/*{game[0].artworks[0].url}*/}
