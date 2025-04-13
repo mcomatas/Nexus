@@ -14,8 +14,23 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id    String @id @default(cuid())
   email String @unique
-  password String
-  username String @unique
+  emailVerified DateTime?
+  session Session[]
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token     String
+  expires   DateTime
+
+  @@id([identifier, token])
 }

@@ -1,7 +1,6 @@
-'use client'
-
 import { login, createUser } from '../actions';
-import { useState } from 'react';
+//import { useState } from 'react';
+import { signIn } from '../../auth';
 
 const FormInput = ({placeholder, type, name}) => {
     return (
@@ -14,10 +13,45 @@ const FormInput = ({placeholder, type, name}) => {
     )
 }
 
-export function LoginForm() {
+export function SignIn() {
     return (
         <form
-            action={login}
+            action={async (formData) => {
+                'use server'
+                await signIn("resend", formData)
+            }}
+            className="flex flex-col p-10 space-y-10"
+        >
+            <FormInput type="text" name="email" placeholder="Email" />
+            <button 
+                type="submit"
+                className="bg-fuchsia-200 text-gray-800 w-30 mx-auto rounded-md"
+            >
+                Sign in with Resend
+            </button>
+        </form>
+    )
+}
+
+/*export function LoginForm() {
+    //const [message, setMessage] = useState("");
+
+    async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+
+        const response = await login(formData);
+        console.log(response);
+        if(response.success) {
+            setMessage("Login successful");
+        } else {
+            setMessage(`${response.message}`)
+        }
+    }
+    
+    return (
+        <form
+            onSubmit={handleLogin}
             className="flex flex-col p-10 space-y-10"
         >
             <FormInput placeholder="Username" type="text" name="username" />
@@ -27,12 +61,13 @@ export function LoginForm() {
                 value="Login"
                 className="bg-fuchsia-200  text-gray-800 w-30 mx-auto rounded-md"
             />
+            {message && <p>{message}</p>}
         </form>
     )
 }
 
 export function SignUpForm() {
-    const [message, setMessage] = useState("");
+    //const [message, setMessage] = useState("");
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault(); // Stops page from refresing and allows form submission asynchronously
@@ -40,7 +75,7 @@ export function SignUpForm() {
 
         const response = await createUser(formData);
         console.log(response);
-        if (response.success) {
+        /*if (response.success) {
             setMessage("User created successfully");
         } else {
             setMessage(`Error: ${response.message}`);
@@ -64,4 +99,4 @@ export function SignUpForm() {
             {message && <p>{message}</p>}
         </form>
     )
-}
+}*/
