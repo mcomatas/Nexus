@@ -18,6 +18,8 @@ import { usePathname } from 'next/navigation';
     return row;
 }*/
 
+const PAGE_SIZE = 32;
+
 export default function Page(props: {
     searchParams?: Promise<{
         query?: string;
@@ -28,6 +30,11 @@ export default function Page(props: {
     const [games, setGames] = useState([]);
     const [count, setCount] = useState(0);
 
+    /*const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+    const body = query.length > 0 
+                ? `search "${query}"; ${bodyMain}`
+                : `${bodyMain} sort total_rating_count desc;`;*/
+
     //const { games, count } = await getGames(query, page);
     useEffect(() => {
         async function fetchGames() {
@@ -36,7 +43,18 @@ export default function Page(props: {
                 //console.log('search params: ', searchParams);
                 const query = searchParams?.query || '';
                 const page = searchParams?.page || 1;
-                const res = await fetch(`/api/games?query=${query}&page=${page}`);
+                const offset = (page - 1) * PAGE_SIZE;
+                const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+                const body = query.length > 0 
+                            ? `search "${query}"; ${bodyMain}`
+                            : `${bodyMain} sort total_rating_count desc;`;
+                const res = await fetch(`/api/games?query=${query}&page=${page}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ body })
+                });
                 const data = await res.json();
                 setGames(data.games);
                 setCount(data.count);
@@ -66,9 +84,9 @@ export default function Page(props: {
 
     return (
         <div>
-            <h1 className="flex max-w-4/5 mx-auto text-md pt-2">Games</h1>
-            <div className='border-b border-solid w-4/5 mx-auto'/>
-            <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-4/5 mx-auto">
+            <h1 className="flex max-w-7/10 mx-auto text-md pt-2">Games</h1>
+            <div className='border-b border-solid w-7/10 mx-auto'/>
+            <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-7/10 mx-auto">
                 {gamesArray}
             </div>
 

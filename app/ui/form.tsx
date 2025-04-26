@@ -1,6 +1,6 @@
 import { login, createUser } from '../actions';
 //import { useState } from 'react';
-import { signIn } from '../../auth';
+import { signIn, signOut } from '../../auth';
 
 const FormInput = ({placeholder, type, name}) => {
     return (
@@ -18,7 +18,7 @@ export function SignIn() {
         <form
             action={async (formData) => {
                 'use server'
-                await signIn("resend", formData)
+                await signIn("resend", formData, { redirectTo: '/' } )
             }}
             className="flex flex-col p-10 space-y-10"
         >
@@ -29,6 +29,19 @@ export function SignIn() {
             >
                 Sign in with Resend
             </button>
+        </form>
+    )
+}
+
+export function SignOut() {
+    return (
+        <form
+            action={async () => {
+                'use server'
+                await signOut()
+            }}
+        >
+            <button type="submit">Sign Out</button>
         </form>
     )
 }

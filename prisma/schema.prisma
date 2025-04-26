@@ -14,13 +14,16 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id            String @id @default(cuid())
+  email         String @unique
+  name          String? @unique @default(uuid())
+  playedGames   Int[]
   emailVerified DateTime?
-  session Session[]
+  session       Session[]
 }
 
 model Session {
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime

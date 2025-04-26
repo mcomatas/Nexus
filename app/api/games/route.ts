@@ -9,15 +9,19 @@ type GamesResponse = {
     count: number;
 }
 
-export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
+export async function POST(req: NextRequest) {
+    /*const { searchParams } = new URL(req.url);
     const query = searchParams.get("query") || "";
     const page = parseInt(searchParams.get("page")) || 1;
-    const offset = (page - 1) * PAGE_SIZE;
-    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+    const offset = (page - 1) * PAGE_SIZE;*/
+    
+    const response = await req.json();
+
+    // This is what I used for a hard coded body before response.body
+    /*const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
     const body = query.length > 0 
                 ? `search "${query}"; ${bodyMain}`
-                : `${bodyMain} sort total_rating_count desc;`;
+                : `${bodyMain} sort total_rating_count desc;`;*/
 
     const accessToken = await getAccessToken();
     
@@ -29,7 +33,7 @@ export async function GET(request: NextRequest) {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
                 'Authorization': `Bearer ${accessToken}`
             },
-            body: body
+            body: response.body
         });
 
         if (!gamesResponse.ok) {
@@ -45,7 +49,7 @@ export async function GET(request: NextRequest) {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
                 'Authorization': `Bearer ${accessToken}`
             },
-            body: body
+            body: response.body
         });
 
         const { count } = await countResponse.json();

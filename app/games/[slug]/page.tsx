@@ -6,10 +6,13 @@ import { ImageModal } from '../../components/imageModal'
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { use } from 'react';
+import { useSession, SessionProvider } from 'next-auth/react'; 
+import AddRemoveButton from '../../components/addRemoveButton'
 
 export default function Page({ params }) {
     const obj = use(params);
     const slug = obj['slug'];   
+
     //const game = await getGameData(slug);
     const [game, setGame] = useState(null);
     const [expanded, setExpanded] = useState(false);
@@ -27,6 +30,18 @@ export default function Page({ params }) {
         fetchGame();
     }, [slug]);
 
+    /*useEffect(() => {
+        async function getUser() {
+            try {
+                //const session = await auth();
+                //if (!session) return;
+                //setUser(session.user);
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+    })*/
+
     if (!game) return <p>Loading...</p>
 
     //const art = Math.floor(Math.random() * game.artworks.length);
@@ -41,10 +56,15 @@ export default function Page({ params }) {
                 </div>
             }
             <div className={`flex flex-row max-w-3/5 mx-auto ${game.artworks && '-mt-15'} p-2 relative`}>
-                <ImageModal 
-                    thmb={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"}
-                    full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
-                />
+                <div className='flex flex-col space-y-2'>
+                    <ImageModal 
+                        thmb={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"}
+                        full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
+                    />
+                    <SessionProvider>
+                        <AddRemoveButton game={game}/>
+                    </SessionProvider>
+                </div>
                 <div className="flex flex-col min-h-screen mx-auto max-w-3/5 p-3">
                     <h1 className="text-3xl font-bold">{game.name}</h1>
                     <br />
