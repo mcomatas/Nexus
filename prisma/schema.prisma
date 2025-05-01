@@ -20,6 +20,7 @@ model User {
   playedGames   Int[]
   emailVerified DateTime?
   session       Session[]
+  reviews       Review[]
 }
 
 model Session {
@@ -32,8 +33,23 @@ model Session {
 
 model VerificationToken {
   identifier String
-  token     String
-  expires   DateTime
+  token      String
+  expires    DateTime
 
   @@id([identifier, token])
+}
+
+model Game {
+  id      Int @id @default(autoincrement())
+  reviews Review[]
+}
+
+model Review {
+  id         String @id @default(cuid())
+  userId     String
+  gameId     Int
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game       Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  rating     Float
+  reviewText String
 }
