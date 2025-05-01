@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, segmentData: { params: Params })
     const accessToken = await getAccessToken();
 
     try {
-        const response = await fetch("https://api.igdb.com/v4/games", {
+        const gameResponse = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
             headers: {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
@@ -18,17 +18,19 @@ export async function GET(request: NextRequest, segmentData: { params: Params })
                 'Access-Control-Allow-Origin': '*'
             },
             body: `
-                fields cover.url, slug, name, storyline, summary, artworks.url;
+                fields cover.url, slug, name, storyline, summary, artworks.url, involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
                 where slug = "${slug}";
             `
         });
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+        if (!gameResponse.ok) {
+            throw new Error(`Response status: ${gameResponse.status}`);
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
+        const game = await gameResponse.json();
+
+        //const data = await gameResponse.json();
+        return NextResponse.json(game);
 
     } catch (error) {
         console.log(error.message);

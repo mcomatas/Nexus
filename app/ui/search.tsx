@@ -43,7 +43,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
                 /*onChange={(e) => {
                     handleSearch(e.target.value);
                 }}*/
-                className="bg-gray-100 rounded-lg p-1 border-1 border-zinc-700 text-sm text-gray-700"
+                className="bg-gray-600 rounded-lg p-1 border-1 border-gray-800 text-sm text-gray-200 focus:outline-2 focus:outline-offset-1 focus:outline-indigo-600"
                 onKeyDown={(e) => onKeyDown(e)}
                 defaultValue={searchParams.get('query')?.toString()}
             />

@@ -84,9 +84,9 @@ export default function Page(props: {
 
     return (
         <div>
-            <h1 className="flex max-w-7/10 mx-auto text-md pt-2">Games</h1>
-            <div className='border-b border-solid w-7/10 mx-auto'/>
-            <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-7/10 mx-auto">
+            <h1 className="flex max-w-6/10 mx-auto text-md pt-2">Games</h1>
+            <div className='border-b border-solid w-6/10 mx-auto'/>
+            <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-6/10 mx-auto">
                 {gamesArray}
             </div>
 
