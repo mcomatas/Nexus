@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '../prisma'
+import { auth } from '../auth';
 
 export async function login(formData: FormData) {
     try {
@@ -29,3 +30,13 @@ export async function createUser(formData: FormData) {
     }
 
 }
+
+export async function createReview(formData: FormData, game) {
+    try {
+        const score = formData.get('score') as string;
+        const review = formData.get('review') as string;
+        console.log(score, review);
+    } catch (error) {
+        console.log(error);
+    }
+}   

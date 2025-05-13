@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html className="min-h-full" lang="en">
-      <body className="min-h-full bg-gradient-to-t from-gray-800 to-gray-600 to-50% text-gray-300" style={openSans.style}>
+      <body className="min-h-full bg-gradient-to-t from-gray-800 to-gray-600 to-40% text-gray-300" style={openSans.style}>
         <Navbar />
           <main>
             {children}

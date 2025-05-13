@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { use } from 'react';
 import { useSession, SessionProvider } from 'next-auth/react'; 
 import AddRemoveButton from '../../components/addRemoveButton'
+import ReviewForm from "../../components/reviewForm";
 
 export default function Page({ params }) {
     const obj = use(params);
@@ -16,6 +17,8 @@ export default function Page({ params }) {
     //const game = await getGameData(slug);
     const [game, setGame] = useState(null);
     const [expanded, setExpanded] = useState(false);
+    const [reviews, setReviews] = useState([]);
+    const [avgRating, setAvgRating] = useState(0);
 
     useEffect(() => {
         async function fetchGame() {
@@ -29,6 +32,30 @@ export default function Page({ params }) {
         }
         fetchGame();
     }, []);
+
+    useEffect(() => {
+        async function fetchReviews() {
+            try {
+                const res = await fetch(`/api/review/get`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        gameId: game.id
+                    })
+                });
+                const data = await res.json();
+                //console.log(data['reviews']);
+                //console.log(data['avg']['_avg'].rating);
+                setAvgRating(data['avg']['_avg'].rating);
+                setReviews(data['reviews']);
+            } catch (error) {
+                console.log("Error fetching reviews: ", error);
+            }
+        }
+        if (game) fetchReviews();
+    }, [game]);
 
     /*useEffect(() => {
         async function getUser() {
@@ -70,23 +97,21 @@ export default function Page({ params }) {
         <div>
             {/*{game[0].artworks[0].url}*/}
             {game.artworks && 
-                <div className="flex flex-col h-100 items-center relative">
+                <div className="flex flex-col h-130 items-center relative">
                     <Image src={'https:' + game.artworks[0].url.replace('t_thumb', 't_1080p')} alt={String(slug)} layout="fill" style={{ objectFit: 'cover', objectPosition: 'center 20%' }} quality={100}/>
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-600 from-10% to-transparent to-50%"/>
                 </div>
             }
-            <div className={`flex flex-row max-w-3/5 mx-auto ${game.artworks && '-mt-15'} p-2 relative`}>
-                <div className='flex flex-col space-y-2'>
+            <div className={`flex flex-row max-w-7/10 min-h-[500px] mx-auto ${game.artworks && '-mt-25'} p-2 relative`}>
+                <div>
                     <ImageModal 
                         thmb={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"}
                         full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
                     />
-                    <SessionProvider>
-                        <AddRemoveButton game={game}/>
-                    </SessionProvider>
+                    <p className="font-semibold text-2xl">{avgRating}</p>
                 </div>
-                <div className="flex flex-col min-h-screen mx-auto max-w-3/5 p-3">
-                    <h1 className="text-3xl font-bold">{game.name}</h1>
+                <div className="flex flex-col mx-auto max-w-3/5 p-4">
+                    <h1 className="text-3xl font-bold text-white">{game.name}</h1>
                     {developers}
                     {publishers}
                     <br />
@@ -103,6 +128,37 @@ export default function Page({ params }) {
                         {expanded ? 'Read Less' : 'Read More'}
                     </button>
                 </div>
+                <div>
+                    <SessionProvider>
+                        <ReviewForm game={game} />
+                    </SessionProvider>
+                </div>
+            </div>
+            <div className="flex flex-col max-w-3/5 mx-auto p-2">
+                <h3>Reviews:</h3>
+                <span className="border-b w-[100%] border-solid mx-auto"/>
+                {reviews.length ? (
+                    <div>
+                        {reviews.map((review) => (
+                            <div key={review.id} className="p-2">
+                                <div className="flex flex-col space-y-2">
+                                    <div className="flex flex-row justify-between">
+                                        <h3 className="text-sm font-semibold">{review.user.name}</h3>
+                                        <p className="text-sm">{review.rating}</p>
+                                    </div>
+                                    <div className="text-sm">
+                                        {review.reviewText}
+                                    </div>
+                                </div>
+                                <div className="border-b w-[100%] border-gray-700 border-solid mx-auto p-2"/>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className='text-sm p-2'>
+                        No reviews yet
+                    </p>
+                )}
             </div>
         </div>
     )
