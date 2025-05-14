@@ -78,8 +78,8 @@ export default function Page({ params }) {
 
     const CompanyGenerator = (companyArray, name) => {
         return (
-            <div className="flex flex-row space-x-2 text-sm">
-                <h3 className="font-semibold">{name}</h3>
+            <div className="text-sm">
+                <h3 className="font-semibold inline pr-2">{name}</h3>
                 {companyArray.map((company, index) => (
                     <span key={company.id}>
                         {company.company.name}
