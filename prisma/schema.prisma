@@ -52,4 +52,6 @@ model Review {
   game       Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   rating     Float
   reviewText String
+
+  @@unique(name: "userGameId", [userId, gameId])
 }

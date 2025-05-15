@@ -11,6 +11,7 @@ export default function ReviewForm({ game }) {
 
     const [score, setScore] = useState('');
     const [review, setReview] = useState('');
+    const [reviewed, setReviewed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -23,12 +24,37 @@ export default function ReviewForm({ game }) {
         return () => document.body.classList.remove("overflow-hidden");
     }, [isOpen]);
 
+    useEffect(() => {
+        async function fetchReview() {
+            try {
+                const res = await fetch('/api/users/getReview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        gameId: game.id,
+                        userId: session?.user.id,
+                    })
+                });
+                const data = await res.json();
+                if (data?.review) setReviewed(true);
+                //console.log(data);
+                setScore(data?.review?.rating);
+                setReview(data?.review?.reviewText);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchReview();
+    }, [session]);
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setSubmitting(true);
 
         try {
-            const reviewResponse = await fetch('/api/review/add', {
+            const reviewResponse = await fetch(`/api/review/${reviewed ? 'update' : 'add'}`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json'
@@ -41,19 +67,21 @@ export default function ReviewForm({ game }) {
                 }),
             });
 
-            const addGameResponse = await fetch('/api/users/addGame', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    gameId: game.id,
-                    email: session.user.email
-                }),
-            });
-            const addGameData = await addGameResponse.json();
+            if (!reviewed) {
+                const addGameResponse = await fetch('/api/users/addGame', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        gameId: game.id,
+                        email: session.user.email
+                    }),
+                });
+            }
+            //const addGameData = await addGameResponse.json();
             const reviewData = await reviewResponse.json();
-            console.log(reviewData);
+            //console.log(reviewData);
             if (reviewResponse.ok) closeModal();
         } catch (error) {
             console.log(error);
@@ -76,6 +104,9 @@ export default function ReviewForm({ game }) {
             </div>
         )
     }
+
+    //console.log(score);
+    //console.log(review);
     
     return (
         <div className="bg-gray-400 rounded-sm mt-15 flex flex-col space-y-5">
