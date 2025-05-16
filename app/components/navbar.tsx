@@ -7,7 +7,8 @@ import Search from '../ui/search'
 import { auth } from '../../auth'
 import { useState, useEffect } from 'react';
 //import { useSession } from 'next-auth/react'
-import { SignOut } from '../ui/form'
+//import { SignOut } from '../ui/form'
+import { signOut } from '../../auth'
 
 //have a Link Item here for more stylization than just Nextjs Link
 /*const NavbarLink = styled(Link)`
@@ -20,11 +21,11 @@ import { SignOut } from '../ui/form'
     }
 `*/
 
-const NavbarLink = ({href, children, ...props}) => {
+const NavbarLink = ({href, children, className = "", ...props}) => {
     //const active = usePathname() === href
     return (
             <Link
-                className={`text-md hover:bg-gray-600/70 transition rounded-md px-3 py-2`}
+                className={`text-md hover:bg-gray-600/70 transition rounded-md px-3 py-2 ${className}`}
                 href={href}
             >
                 {children}
@@ -46,7 +47,20 @@ export default async function Navbar() {
                 <div className="flex justify-evenly items-center gap-x-6">
                     <NavbarLink href="/games">Games</NavbarLink>
                     <Search placeholder='Search Game'/>
-                    {session?.user ? (<NavbarLink href={`/users/${session?.user.name}`}>Profile</NavbarLink>) : (<NavbarLink href="/login">Login</NavbarLink>)}
+                    {session?.user ? (
+                            <div className="relative inline-block group text-sm">
+                                <div className="hidden group-hover:flex flex-col absolute pb-2 bg-gray-400 rounded-sm z-10">
+                                  <div className="px-4 py-2 mb-2 text-left w-full group-hover:text-white border-b border-solid border-gray-500/50">{session?.user.name}</div>
+
+                                  <Link href={`/users/${session?.user.name}`} className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Games</Link>
+                                  <p className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Settings</p>
+                                </div>
+
+                                <p className="px-4 py-2 text-left w-full">{session?.user.name}</p>
+                            </div>
+                        ) : (
+                            <NavbarLink href="/login">Login</NavbarLink>
+                        )}
                 </div>
             </div>
         </div>
