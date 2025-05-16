@@ -7,35 +7,25 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const response = await req.json();
     const  { userId, newUsername, newEmail } = response;
 
-    // Find user
-    const user = await prisma.user.findUnique({
+    const conflicts = await prisma.user.findMany({
         where: {
-            id: userId 
+            OR: [
+                { name: newUsername },
+                { email: newEmail }
+            ],
+            NOT: {
+                id: userId // Exludes the current user
+            }
         }
     });
+    
+    if (conflicts.length > 0) {
+        const conflict = conflicts[0];
+        if (conflict.name === newUsername) return NextResponse.json({ message: 'Username already exists' });
+        if (conflict.email === newEmail) return NextResponse.json({ message: 'Email already exists' });
 
-    if (!user) {
-        return NextResponse.json({ message: 'User not found' });
+        return NextResponse.json({ message: 'Unknown error occurred' });
     }
-
-    // Check if the new username or email already exists
-    // Not sure if this would work exactly as if you were try to update to your current username
-    // it might make cause some errors
-    const existingUsername = await prisma.user.findUnique({
-        where: {
-            name: newUsername
-        }
-    });
-
-    if (existingUsername) return NextResponse.json({ message: 'Username already exists'});
-
-    const existingEmail = await prisma.user.findUnique({
-        where: {
-            email: newEmail
-        }
-    });
-
-    if (existingEmail) return NextResponse.json({ message: 'Email already exists'});
 
     // Update user
     const updatedUser = await prisma.user.update({
