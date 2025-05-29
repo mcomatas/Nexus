@@ -6,6 +6,10 @@ import styled from 'styled-components'
 import Search from '../ui/search'
 import { auth } from '../../auth'
 import { useState, useEffect } from 'react';
+//import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown } from 'react-icons/fa6'
+import { IoIosArrowDown } from 'react-icons/io'
+
 //import { useSession } from 'next-auth/react'
 //import { SignOut } from '../ui/form'
 import { signOut } from '../../auth'
@@ -37,7 +41,7 @@ const NavbarLink = ({href, children, className = "", ...props}) => {
 export default async function Navbar() {        
     const session = await auth();
     //console.log(session);
-    const name = session?.user.name;
+    //const name = session?.user.name;
     //console.log(session?.user.email);
     
     return (
@@ -50,13 +54,14 @@ export default async function Navbar() {
                     {session?.user ? (
                             <div className="relative inline-block group text-sm">
                                 <div className="hidden group-hover:flex flex-col absolute pb-2 bg-gray-400 rounded-sm z-10">
-                                  <div className="px-4 py-2 mb-2 text-left w-full group-hover:text-white border-b border-solid border-gray-500/50">{session?.user.name}</div>
+                                  <div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-white border-b border-solid border-gray-500/50">{session?.user.name} <IoIosArrowDown className="ml-0.5 mt-1.25" /></div>
 
-                                  <Link href={`/users/${session?.user.name}`} className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Games</Link>
-                                  <p className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Settings</p>
+                                  <Link href='/' className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Home</Link>
+                                  <Link href={`/users/${session?.user.name}`} className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Profile</Link>
+                                  <Link href='/settings' className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500">Settings</Link>
                                 </div>
 
-                                <p className="px-4 py-2 text-left w-full">{session?.user.name}</p>
+                                <p className="flex items-center px-4 py-2 text-left w-full">{session?.user.name} <IoIosArrowDown className="ml-0.5 mt-1.25" /></p>
                             </div>
                         ) : (
                             <NavbarLink href="/login">Login</NavbarLink>
