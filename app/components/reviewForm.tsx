@@ -26,6 +26,7 @@ export default function ReviewForm({ game }) {
 
     useEffect(() => {
         async function fetchReview() {
+            if(!session) return;
             try {
                 const res = await fetch('/api/users/getReview', {
                     method: 'POST',
@@ -33,8 +34,8 @@ export default function ReviewForm({ game }) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        gameId: game.id,
                         userId: session?.user.id,
+                        gameId: game.id,
                     })
                 });
                 const data = await res.json();
@@ -149,14 +150,14 @@ export default function ReviewForm({ game }) {
                                     step="0.1"
                                     max="10"
                                     min="0"
-                                    value={score}
+                                    value={score ?? ''}
                                     onChange={(e) => setScore(e.target.value)}
                                 />
                                 <textarea
                                     className="bg-gray-600 rounded-sm h-50 w-70 p-1 text-sm focus:h-100 focus:w-120 focus:outline-2 focus:outline-offset-1 focus:outline-indigo-600 transition-all duration-300"
                                     placeholder="Write your review here..."
                                     name="review"
-                                    value={review}
+                                    value={review ?? ''}
                                     onChange={(e) => setReview(e.target.value)}
                                 />
                                 <button

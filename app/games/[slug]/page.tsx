@@ -33,6 +33,7 @@ export default function Page({ params }) {
         fetchGame();
     }, []);
 
+    // Could possibly use a component for this instead of using a hook in the slug page.
     useEffect(() => {
         async function fetchReviews() {
             try {
@@ -73,14 +74,14 @@ export default function Page({ params }) {
     
     // Some games might not have involved_companies returned. This would result
     // in undefined and an error. Need to be careful of this in the future.
-    const developersFiltered = game.involved_companies.filter((company) => company.developer);
-    const publishersFiltered = game.involved_companies.filter((company) => company.publisher);
+    const developersFiltered = game.involved_companies?.filter((company) => company.developer);
+    const publishersFiltered = game.involved_companies?.filter((company) => company.publisher);
 
     const CompanyGenerator = (companyArray, name) => {
         return (
             <div className="text-sm">
                 <h3 className="font-semibold inline pr-2">{name}</h3>
-                {companyArray.map((company, index) => (
+                {companyArray?.map((company, index) => (
                     <span key={company.id}>
                         {company.company.name}
                         {index < companyArray.length - 1 && ', '}

@@ -6,8 +6,7 @@ export async function POST( req: NextRequest, res: NextResponse ) {
 
     const response = await req.json();
     const username = response.username;
-    //console.log(response);
-    //console.log(response.username);
+
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -16,12 +15,10 @@ export async function POST( req: NextRequest, res: NextResponse ) {
         });
 
         if(!user) return;
-        //console.log(response?.playedGames);
-        const ids = user.playedGames;
-        const body = `fields name, slug, cover.url; where id = (${ids.join(',')});`
 
-        // const query = '';
-        // const page = 1;
+        // Currently displaying all played games. Might change to pagination later.
+        const ids = user.playedGames;
+        const body = `fields name, slug, cover.url; where id = (${ids.join(',')}); limit ${ids.length};`
 
         const gamesResponse = await fetch(`http://localhost:3000/api/games`, {
             method: 'POST',

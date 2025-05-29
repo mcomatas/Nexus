@@ -7,6 +7,7 @@ import { auth } from '../../../auth';
 import { useState, useEffect } from 'react';
 import { prisma } from '../../../prisma';
 import { GameCard } from '../../components/gamecard';
+import Pagination from '../../ui/pagination';
 
 interface Props {
     params: {
@@ -14,9 +15,22 @@ interface Props {
     };
 }
 
+const PAGE_SIZE = 32;
+
+//`fields name, slug, cover.url; where id = (${ids.join(',')}); limit 20;`
+//const page = searchParams?.page || 1;
+//const offset = (page - 1) * PAGE_SIZE;
+//const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+/*const body = query.length > 0 
+            ? `search "${query}"; ${bodyMain}`
+            : `${bodyMain} sort total_rating_count desc;`;*/
+
 export default function Page({ params }) {
     //const { username } = await params;
 
+    //const page = searchParams?.page || 1;
+    //const offset = (page - 1) * PAGE_SIZE;
+    //const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
 
     
     const obj = use(params);
@@ -29,13 +43,19 @@ export default function Page({ params }) {
 
     useEffect(() => {
         async function fetchGames() {
+            //const searchParams = await props.searchParams;
+            //const page = searchParams?.page || 1;
+            //const offset = (page - 1) * PAGE_SIZE;
+            //const body = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+
+            
             const response = await fetch('/api/users/getGames', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    username: username
+                    username: username,
                 })
             });
             const data = await response.json();
@@ -60,6 +80,10 @@ export default function Page({ params }) {
             <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-4/5 mx-auto">
                 {gamesArray}
             </div>
+            {/*
+                Leavin pagination out for now. Currently displaying all games a user has played on their profile.
+                <Pagination totalCount={count} />
+            */}
             <br />
             <button 
                 onClick={() => signOut()}
