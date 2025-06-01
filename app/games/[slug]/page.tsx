@@ -1,76 +1,25 @@
 'use client'
 
-import getGameData from "../../lib/getGameData"
-import { GameCard } from "../../components/gamecard";
 import { ImageModal } from '../../components/imageModal'
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { use } from 'react';
-import { useSession, SessionProvider } from 'next-auth/react'; 
-import AddRemoveButton from '../../components/addRemoveButton'
+import { SessionProvider } from 'next-auth/react'; 
 import ReviewForm from "../../components/reviewForm";
+import useSWR from "swr";
 
 export default function Page({ params }) {
     const obj = use(params);
     const slug = obj['slug'];   
 
-    //const game = await getGameData(slug);
-    const [game, setGame] = useState(null);
     const [expanded, setExpanded] = useState(false);
-    const [reviews, setReviews] = useState([]);
-    const [avgRating, setAvgRating] = useState(0);
 
-    useEffect(() => {
-        async function fetchGame() {
-            try {
-                const res = await fetch(`/api/games/${slug}`);
-                const data = await res.json();
-                setGame(data[0]);
-            } catch (error) {
-                console.log("Error fetching game:", error)
-            }
-        }
-        fetchGame();
-    }, []);
-
-    // Could possibly use a component for this instead of using a hook in the slug page.
-    useEffect(() => {
-        async function fetchReviews() {
-            try {
-                const res = await fetch(`/api/review/get`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        gameId: game.id
-                    })
-                });
-                const data = await res.json();
-                //console.log(data['reviews']);
-                //console.log(data['avg']['_avg'].rating);
-                setAvgRating(data['avg']['_avg'].rating);
-                setReviews(data['reviews']);
-            } catch (error) {
-                console.log("Error fetching reviews: ", error);
-            }
-        }
-        if (game) fetchReviews();
-    }, [game]);
-
-    /*useEffect(() => {
-        async function getUser() {
-            try {
-                //const session = await auth();
-                //if (!session) return;
-                //setUser(session.user);
-            } catch (error) {
-                console.log("Error: ", error);
-            }
-        }
-    })*/
-
-    if (!game) return <p>Loading...</p>
+    const fetcher = url => fetch(url).then(res => res.json());
+    const { data: game, error: gameError, isLoading: gameLoading } = useSWR(`/api/games/${slug}`, fetcher);
+    const { data: reviewsAndRating, error: reviewsError, isLoading: reviewsLoading } = useSWR(`/api/review/${slug}/get`, fetcher);
+   
+    if (gameLoading) return <p>Loading...</p>;
+    if (gameError) return <p>Error loading game.</p>;
     
     // Some games might not have involved_companies returned. This would result
     // in undefined and an error. Need to be careful of this in the future.
@@ -109,7 +58,7 @@ export default function Page({ params }) {
                         thmb={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"}
                         full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
                     />
-                    <p className="font-semibold text-2xl">{avgRating}</p>
+                    <p className="font-semibold text-2xl">{reviewsAndRating.avg._avg.rating}</p>
                 </div>
                 <div className="flex flex-col mx-auto max-w-3/5 p-4">
                     <h1 className="text-3xl font-bold text-white">{game.name}</h1>
@@ -138,9 +87,9 @@ export default function Page({ params }) {
             <div className="flex flex-col max-w-3/5 mx-auto p-2">
                 <h3>Reviews:</h3>
                 <span className="border-b w-[100%] border-solid mx-auto"/>
-                {reviews.length ? (
+                {reviewsAndRating.reviews.length ? (
                     <div>
-                        {reviews.map((review) => (
+                        {reviewsAndRating.reviews.map((review) => (
                             <div key={review.id} className="p-2">
                                 <div className="flex flex-col space-y-2">
                                     <div className="flex flex-row justify-between">

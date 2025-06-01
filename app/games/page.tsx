@@ -1,22 +1,9 @@
 'use client'
 
-import Link from 'next/link';
 import { GameCard } from '../components/gamecard'
-//import getAccessToken from '../lib/getAccessToken'
-import getGames from '../lib/getGames';
 import Pagination from '../ui/pagination';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-
-// Creates GameCard components 
-/*function makeRow(games) {
-    const row = games.map((game) => 
-        <li key={game.id}>
-            <GameCard src={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"} alt={game.slug} slug={game.slug}/>
-        </li>
-    )
-    return row;
-}*/
+import { use } from 'react';
+import useSWR from 'swr';
 
 const PAGE_SIZE = 32;
 
@@ -26,61 +13,21 @@ export default function Page(props: {
         page?: number;
     }>;
 }) {
+    const searchParams = use(props.searchParams);
+    const query = searchParams?.query || '';
+    const page = searchParams?.page || 1;
 
-    const [games, setGames] = useState([]);
-    const [count, setCount] = useState(0);
+    const fetcher = url => fetch(url).then(r => r.json());
+    const { data, error, isLoading } = useSWR(`/api/games?query=${query}&page=${page}`, fetcher);
 
-    /*const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
-    const body = query.length > 0 
-                ? `search "${query}"; ${bodyMain}`
-                : `${bodyMain} sort total_rating_count desc;`;*/
+    if(isLoading) return <p>Loading...</p>
+    if(error) return <p>Error loading games</p>;
 
-    //const { games, count } = await getGames(query, page);
-    useEffect(() => {
-        async function fetchGames() {
-            try {
-                const searchParams = await props.searchParams;
-                //console.log('search params: ', searchParams);
-                const query = searchParams?.query || '';
-                const page = searchParams?.page || 1;
-                const offset = (page - 1) * PAGE_SIZE;
-                const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
-                const body = query.length > 0 
-                            ? `search "${query}"; ${bodyMain}`
-                            : `${bodyMain} sort total_rating_count desc;`;
-                const res = await fetch(`/api/games?query=${query}&page=${page}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ body })
-                });
-                const data = await res.json();
-                setGames(data.games);
-                setCount(data.count);
-            } catch (error) {
-                console.log("Error fetching games: ", error);
-            }
-        }
-        fetchGames();
-    }, [props]);
-
-    if (!games || !count) return <p>Loading...</p>
-
-    const gamesArray = games.map((game) => 
+    const gamesArray = data.games.map((game) => 
         <div key={game.id}>
             <GameCard src={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"} alt={game.slug} slug={game.slug}/>
         </div>
     )
-
-    //const data2d = [];
-    // I think this will have to be changed later for mobile viewing
-    /*while (games.length) data2d.push(games.splice(0,4)); // Make a 2D array with rows fo length 4
-    const gamesArray = data2d.map((row, index) => 
-        <div className='main' key={index}>
-            {makeRow(row)}
-        </div>
-    )*/
 
     return (
         <div>
@@ -91,7 +38,7 @@ export default function Page(props: {
             </div>
 
             {/*Pagination Controls*/}
-            {<Pagination totalCount={count}/>}
+            {<Pagination totalCount={data.count.count}/>}
         </div>
     )
 }
