@@ -1,16 +1,16 @@
-import { NextResponse, NextRequest } from "next/server";
-import { prisma } from '../../../../prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '../../../../../prisma';
 
-export async function POST(req: NextRequest, res: NextResponse) {
-    if (req.method !== 'POST') return;
-
-    const response = await req.json();
-    //console.log(response);
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ slug: string }> }
+) {
+    const { slug } = await params;
 
     try {
         const reviews = await prisma.review.findMany({
             where: {
-                gameId: response.gameId     
+                gameSlug: slug
             },
             include: {
                 user: {
@@ -18,21 +18,19 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 }
             }
         });
-        //console.log(reviews);
 
         const avg = await prisma.review.aggregate({
             _avg: {
                 rating: true
             },
             where: {
-                gameId: response.gameId
+                gameSlug: slug
             }
         });
-        //console.log(avg);
 
         return NextResponse.json({ reviews, avg });
+
     } catch (error) {
         console.log(error);
     }
-
 }
