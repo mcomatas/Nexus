@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import React, { useState, useEffect } from 'react';
 import AddRemoveButton from './addRemoveButton';
 import { GameCard } from './gamecard';
+import useSWR from 'swr';
 
 export default function ReviewForm({ game }) {
     const { data: session, status } = useSession();
@@ -24,49 +25,34 @@ export default function ReviewForm({ game }) {
         return () => document.body.classList.remove("overflow-hidden");
     }, [isOpen]);
 
+    const fetcher = url => fetch(url).then(res => res.json());
+    const { data: reviewData, error: reviewError, isLoading: reviewLoading } = useSWR(`/api/users/review/${game.slug}/get`, fetcher);
+
     useEffect(() => {
-        async function fetchReview() {
-            if(!session) return;
-            try {
-                const res = await fetch('/api/users/getReview', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: session?.user.id,
-                        gameId: game.id,
-                    })
-                });
-                const data = await res.json();
-                if (data?.review) setReviewed(true);
-                //console.log(data);
-                setScore(data?.review?.rating);
-                setReview(data?.review?.reviewText);
-            } catch (error) {
-                console.log(error);
-            }
+        if (reviewData) {
+            if (reviewData?.review) setReviewed(true);
+            setScore(reviewData?.review?.rating || '');
+            setReview(reviewData?.review?.reviewText || '');
         }
-        fetchReview();
-    }, [session]);
+    }, [reviewData]);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setSubmitting(true);
 
         try {
-            const reviewResponse = await fetch(`/api/review/${reviewed ? 'update' : 'add'}`, {
+            const reviewResponse = await fetch(`/api/review/${game.slug}/${reviewed ? 'update' : 'add'}`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    gameId: game.id,
+                    slug: game.slug,
                     score: parseFloat(score),
                     review: review,
                     userId: session.user.id
-                }),
-            });
+                })
+            })
 
             if (!reviewed) {
                 const addGameResponse = await fetch('/api/users/addGame', {
@@ -79,15 +65,17 @@ export default function ReviewForm({ game }) {
                         email: session.user.email
                     }),
                 });
+                const addGameData = await addGameResponse.json();
+                console.log(addGameData);
             }
-            //const addGameData = await addGameResponse.json();
+
             const reviewData = await reviewResponse.json();
-            //console.log(reviewData);
+            
             if (reviewResponse.ok) closeModal();
+
         } catch (error) {
             console.log(error);
         }
-
     }
 
     const openModal = () => {
@@ -98,6 +86,14 @@ export default function ReviewForm({ game }) {
         setIsOpen(false);
     };
 
+    if (status === 'loading' || reviewLoading) {
+        return (
+            <div className="bg-gray-400 rounded-sm mt-15 p-5 w-50 text-white">
+                Loading review...
+            </div>
+        );
+    }
+
     if (!session) {
         return (
             <div className="bg-gray-400 rounded-sm mt-15 p-5 w-50 text-white">
@@ -105,9 +101,6 @@ export default function ReviewForm({ game }) {
             </div>
         )
     }
-
-    //console.log(score);
-    //console.log(review);
     
     return (
         <div className="bg-gray-400 rounded-sm mt-15 flex flex-col space-y-5">
