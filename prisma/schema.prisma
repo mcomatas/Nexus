@@ -41,17 +41,18 @@ model VerificationToken {
 
 model Game {
   id      Int @id @default(autoincrement())
+  slug    String @unique
   reviews Review[]
 }
 
 model Review {
   id         String @id @default(cuid())
   userId     String
-  gameId     Int
+  gameSlug   String
   user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game       Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  game       Game   @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
   rating     Float
   reviewText String
 
-  @@unique(name: "userGameId", [userId, gameId])
+  @@unique(name: "userIdGameSlug", [userId, gameSlug])
 }
