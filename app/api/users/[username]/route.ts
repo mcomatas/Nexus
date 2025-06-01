@@ -1,0 +1,54 @@
+import { NextResponse, NextRequest } from 'next/server';
+import { prisma } from '../../../../prisma';
+import getAccessToken from '../../../lib/getAccessToken';
+
+export async function GET(
+    request: NextRequest, 
+    { params }: { params: Promise<{ username: string }>}
+) {
+    const { username } = await params;
+    const accessToken = await getAccessToken();
+    //console.log("Username: ", username);
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                name: username
+            }
+        });
+
+        if(!user) return;
+
+        //console.log(user);
+        const ids = user.playedGames;
+        if (!ids.length) return NextResponse.json({ data: [] }); //Handle case where no games are played
+        
+        const body = `fields name, slug, cover.url; where id = (${ids.join(',')}); limit ${ids.length};`;
+
+        const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Client-ID': process.env.IGDB_CLIENT_ID,
+                'Authorization': `Bearer ${accessToken}`
+            },
+            //body: req.body
+            body: body
+        });
+
+        /*const gamesResponse = await fetch(`http://localhost:3000/api/games`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ body }),
+        });*/
+
+        const data = await gamesResponse.json();
+        
+        return NextResponse.json({ data });
+
+    } catch (error) {
+        console.error("Error fetching user: ", error);
+    }
+}
