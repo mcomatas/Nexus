@@ -58,7 +58,7 @@ export default function Page({ params }) {
                         thmb={game.cover ? "https:" + game.cover.url.replace("t_thumb", "t_720p") : "/default-cover.webp"}
                         full={game.cover ? "https:" + game.cover.url.replace("t_thumb", "1080p") : "/default-cover.webp"}
                     />
-                    <p className="font-semibold text-2xl">{reviewsAndRating.avg._avg.rating}</p>
+                    <p className="font-semibold text-2xl">{reviewsAndRating?.avg._avg.rating}</p>
                 </div>
                 <div className="flex flex-col mx-auto max-w-3/5 p-4">
                     <h1 className="text-3xl font-bold text-white">{game.name}</h1>
@@ -87,7 +87,7 @@ export default function Page({ params }) {
             <div className="flex flex-col max-w-3/5 mx-auto p-2">
                 <h3>Reviews:</h3>
                 <span className="border-b w-[100%] border-solid mx-auto"/>
-                {reviewsAndRating.reviews.length ? (
+                {reviewsAndRating?.reviews.length ? (
                     <div>
                         {reviewsAndRating.reviews.map((review) => (
                             <div key={review.id} className="p-2">
