@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * PAGE_SIZE;
     //console.log("Query: ", query);
     //console.log("Page: ", page);
-    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8); limit ${PAGE_SIZE}; offset ${offset};`
+    const bodyMain = `fields name, slug, cover.url; where cover != null & game_type = (0,8) & version_parent = null; limit ${PAGE_SIZE}; offset ${offset};`
     const body = query.length > 0
                 ? `search "${query}"; ${bodyMain}`
                 : `${bodyMain} sort total_rating_count desc;`;
