@@ -4,7 +4,7 @@ Nexus is a fullstack application to rate, log, and discover all different kinds 
 Inspired by [Letterboxd](https://letterboxd.com), Nexus serves as a hub see what others think about your favorite game and find your next favorite too.
 
 ### Demo Gifs
-![Demo1](https://i.imgur.com/bur6iTQ.gif)
+![Demo1](https://i.imgur.com/jbHHWjH.gif)
 ![Demo2](https://i.imgur.com/k2q1M8z.gif)
 ![Demo3](https://i.imgur.com/GssdHwk.gif)
 
