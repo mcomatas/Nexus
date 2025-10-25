@@ -10,14 +10,15 @@ export async function GET(
     const accessToken = await getAccessToken();
     //console.log("Username: ", username);
 
-    try {
-        const user = await prisma.user.findUnique({
+    try {        
+        // Use a case-insensitive lookup so URLs are not case-sensitive.
+        const user = await prisma.user.findFirst({
             where: {
-                name: username
+                name: { equals: username, mode: 'insensitive' }
             }
         });
 
-        if(!user) return;
+        if(!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
         //console.log(user);
         const ids = user.playedGames;
@@ -44,9 +45,9 @@ export async function GET(
             body: JSON.stringify({ body }),
         });*/
 
-        const data = await gamesResponse.json();
+        const games = await gamesResponse.json();
         
-        return NextResponse.json({ data });
+        return NextResponse.json({ games, user });
 
     } catch (error) {
         console.error("Error fetching user: ", error);
