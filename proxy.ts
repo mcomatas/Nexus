@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone(); // The current URL request. Then make a copy of it so we can modify it.
     const { pathname } = request.nextUrl; // This is just the path name after the doman (/users/username)
 

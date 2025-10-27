@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+// import { usePathname } from 'next/navigation'
 import '../ui/global.css'
 import { inter, rowdies } from '../ui/fonts'
 import styled from 'styled-components'
 import Search from '../ui/search'
 import { auth } from '../../auth'
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 //import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
-import { FaChevronDown } from 'react-icons/fa6'
+// import { FaChevronDown } from 'react-icons/fa6'
 import { IoIosArrowDown } from 'react-icons/io'
 
 //import { useSession } from 'next-auth/react'
