@@ -34,9 +34,6 @@ export default function Page({ params }) {
         </div>
     );
 
-    console.log("Data: ", data);
-    console.log(data?.user?.name)
-
     return (
         <div>
             {/* Display the canonical username from the API if available, otherwise show the URL param */}
