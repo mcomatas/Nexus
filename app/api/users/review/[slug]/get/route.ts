@@ -9,6 +9,8 @@ export async function GET(
     const { slug } = await params;
     const session = await auth();
 
+    if(!session) return NextResponse.json({ review: null, reason: 'unauthenticated' }, { status: 200 });
+
     try {
         const review = await prisma.review.findUnique({
             where: {
@@ -23,5 +25,6 @@ export async function GET(
 
     } catch (error) {
         console.log(error);
+        return NextResponse.json({ error: 'Error fetching review' }, { status: 500 });
     }
 }
