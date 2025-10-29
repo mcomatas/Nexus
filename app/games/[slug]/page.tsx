@@ -73,12 +73,12 @@ export default function Page({ params }) {
                     </p>
                     <br />
                     <button 
-                        onClick={() => setExpanded(!expanded)}className="text-xs ml-auto hover:underline"
+                        onClick={() => setExpanded(!expanded)}className="text-xs ml-auto hover:underline cursor-pointer"
                     >
                         {expanded ? 'Read Less' : 'Read More'}
                     </button>
                 </div>
-                <div>
+                 <div className="w-50">
                     <SessionProvider>
                         <ReviewForm game={game} />
                     </SessionProvider>

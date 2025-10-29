@@ -108,7 +108,7 @@ export default function ReviewForm({ game }) {
             <span className="border-b border-gray-800" />
             <button
                 onClick={openModal}
-                className='text-white pb-5 pl-3 pr-3'
+                className='text-white pb-5 pl-3 pr-3 hover:text-gray-700 cursor-pointer'
             >
                 Review Game
             </button>
@@ -124,7 +124,7 @@ export default function ReviewForm({ game }) {
                             <p className="text-lg text-white p-2 pl-5">Review {game.name}</p>
                             <button
                                 onClick={closeModal}
-                                className="text-2xl text-black p-2 pr-5"
+                                className="text-2xl text-gray-800 p-2 pr-5 hover:text-gray-200 cursor-pointer"
                             >
                                 X
                             </button>

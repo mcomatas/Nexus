@@ -62,7 +62,7 @@ export default function AddRemoveButton({ game }) {
     
     return (
         <button
-            className='bg-fuchsia-200 text-gray-700 text-xl rounded-sm mr-auto pl-2 pr-2 pt-0.5 pb-0.5 hover:bg-fuchsia-400 transition-all'
+            className='bg-fuchsia-200 text-gray-700 text-xl rounded-sm mr-auto pl-2 pr-2 pt-0.5 pb-0.5 hover:bg-fuchsia-400 transition-all cursor-pointer'
             onClick={played ? () => {
                 handleRemove();
                 setPlayed(!played);
