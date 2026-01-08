@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+    --color-test: #0a0e14;
+}
+
 /* * {
     -ms-overflow-style: none;
 }
