@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useDebouncedCallback } from 'use-debounce';
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Search({ placeholder }: { placeholder: string }) {
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const { replace } = useRouter();
-    
-    //This handles search for every key stroke with debouncing
-    /*const handleSearch = useDebouncedCallback((term) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  //This handles search for every key stroke with debouncing
+  /*const handleSearch = useDebouncedCallback((term) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', '1')
         if (term) {
@@ -21,32 +21,32 @@ export default function Search({ placeholder }: { placeholder: string }) {
         //console.log(term);
     }, 500);*/
 
-    //This handles search based on hitting the 'Enter' key
-    const handleSearch = ((term) => {
-        const params = new URLSearchParams(searchParams);
-        params.set('query', term);
-        params.set('page', '1');
-        replace(`/games?${params.toString()}`);
-    });
+  //This handles search based on hitting the 'Enter' key
+  const handleSearch = (term) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("query", term);
+    params.set("page", "1");
+    replace(`/games?${params.toString()}`);
+  };
 
-    const onKeyDown = (e) => {
-        if(e.key === "Enter") {
-            handleSearch(e.target.value);
-            e.target.value = ""; // Make search bar return to empty string after hitting enter
-        }
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e.target.value);
+      e.target.value = ""; // Make search bar return to empty string after hitting enter
     }
+  };
 
-    return (
-        <div>
-            <input 
-                placeholder={placeholder}
-                /*onChange={(e) => {
+  return (
+    <div>
+      <input
+        placeholder={placeholder}
+        /*onChange={(e) => {
                     handleSearch(e.target.value);
                 }}*/
-                className="bg-gray-600 rounded-lg p-1 border-1 border-gray-800 text-sm text-gray-200 focus:outline-2 focus:outline-offset-1 focus:outline-indigo-600"
-                onKeyDown={(e) => onKeyDown(e)}
-                defaultValue={searchParams.get('query')?.toString()}
-            />
-        </div>
-    )
+        className="bg-[--color-surface] rounded-lg p-1.5 border border-primary/50 text-sm text-text-primary] placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
+        onKeyDown={(e) => onKeyDown(e)}
+        defaultValue={searchParams.get("query")?.toString()}
+      />
+    </div>
+  );
 }

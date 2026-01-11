@@ -29,7 +29,7 @@ const NavbarLink = ({ href, children, className = "", ...props }) => {
   //const active = usePathname() === href
   return (
     <Link
-      className={`text-md hover:bg-gray-600/70 transition rounded-md px-3 py-2 ${className}`}
+      className={`text-md hover:bg-primary/30 transition rounded-md px-3 py-2 ${className}`}
       href={href}
     >
       {children}
@@ -54,27 +54,27 @@ export default async function Navbar() {
           <Search placeholder="Search Game" />
           {session?.user ? (
             <div className="relative inline-block group text-sm">
-              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-gray-400 rounded-sm z-10">
-                <div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-white border-b border-solid border-gray-500/50">
-                  {session?.user.name}{" "}
+              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-navbar-glass rounded-sm z-10">
+                <div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-text-primary border-b border-solid border-gray-500/50">
+                  {session?.user.name}
                   <IoIosArrowDown className="ml-0.5 mt-1.25" />
                 </div>
 
                 <Link
                   href="/"
-                  className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500"
+                  className="px-4 py-2 text-text-primary hover:text-white hover:bg-primary/70 transition-colors"
                 >
                   Home
                 </Link>
                 <Link
                   href={`/users/${session?.user.name}`}
-                  className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500"
+                  className="px-4 py-2 text-text-primary hover:text-white hover:bg-primary/70 transition-colors"
                 >
                   Profile
                 </Link>
                 <Link
                   href="/settings"
-                  className="px-4 py-2 text-gray-700 hover:text-white hover:bg-gray-500"
+                  className="px-4 py-2 text-text-primary hover:text-white hover:bg-primary/70 transition-colors"
                 >
                   Settings
                 </Link>
