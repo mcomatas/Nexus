@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-    --color-test: #0a0e14;
+    --color-background-start: #0f1419;
+    --color-background-mid: #1a1f2e;
+    --color-background-end: #1e2433;
+
+    --color-surface: #252d3a;
+
+    --color-text-primary: #e8edf2;
+}
+
+@utility bg-navbar-glass {
+    background: rgba(15, 20, 25, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(74, 158, 255, 0.15);
 }
 
 /* * {

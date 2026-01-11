@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html className="min-h-full" lang="en">
       <body
-        className="min-h-full bg-gradient-to-t from-gray-800 to-gray-600 to-40% text-gray-300"
+        className="min-h-full bg-gradient-to-t from-background-start via-background-mid via-40% to-background-end to-80% text-text-primary"
         style={openSans.style}
       >
         {/*<body className="min-h-screen bg-test">*/}
