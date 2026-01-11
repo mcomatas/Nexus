@@ -113,7 +113,7 @@ export default function ReviewForm({ game }) {
       <span className="pt-5 pl-3">
         <AddRemoveButton game={game} />
       </span>
-      <span className="border-b border-[rgba(123,104,238,0.2)]" />
+      <span className="border-b border-primary/50" />
       <button
         onClick={openModal}
         className="text-text-primary pb-5 pl-3 pr-3 hover:text-text-secondary cursor-pointer transition-colors font-medium"
@@ -123,8 +123,8 @@ export default function ReviewForm({ game }) {
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xl z-50">
-          <div className="bg-surface-elevated rounded-lg h-150 w-250 flex flex-col shadow-shadow-elevated border border-[rgba(123,104,238,0.2)]">
-            <div className="flex justify-between border-b border-[rgba(123,104,238,0.2)]">
+          <div className="bg-surface-elevated rounded-lg h-150 w-250 flex flex-col shadow-shadow-elevated border border-primary/50">
+            <div className="flex justify-between border-b border-primary/50">
               <p className="text-lg text-text-primary p-2 pl-5 font-semibold">
                 Review {game.name}
               </p>
@@ -147,7 +147,7 @@ export default function ReviewForm({ game }) {
               />
               <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
                 <input
-                  className="bg-background-mid rounded-lg p-2.5 border border-[rgba(123,104,238,0.3)] text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
+                  className="bg-background-mid rounded-lg p-2.5 border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
                   name="score"
                   placeholder="Score"
                   type="number"
@@ -158,7 +158,7 @@ export default function ReviewForm({ game }) {
                   onChange={(e) => setScore(e.target.value)}
                 />
                 <textarea
-                  className="bg-background-mid rounded-lg h-90 w-120 p-2.5 text-sm border border-[rgba(123,104,238,0.3)] text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all duration-300 resize-none"
+                  className="bg-background-mid rounded-lg h-90 w-120 p-2.5 text-sm border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all duration-300 resize-none"
                   placeholder="Write your review here..."
                   name="review"
                   value={review ?? ""}
