@@ -21,6 +21,50 @@
     border-bottom: 1px solid rgba(74, 158, 255, 0.15);
 }
 
+/* Pagination Button Utilities */
+@utility btn-pagination-base {
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 200ms;
+    cursor: pointer;
+}
+
+@utility btn-pagination-nav {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.625rem 1.25rem;
+
+    &:hover:not(:disabled) {
+        background: var(--color-primary-dark);
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        background: var(--color-surface);
+        color: var(--color-text-muted);
+    }
+}
+
+@utility btn-pagination-page {
+    height: 2.5rem;
+    width: 4rem;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid rgba(123, 104, 238, 0.2);
+
+    &:hover {
+        background: var(--color-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+}
+
+@utility btn-pagination-page-active {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
 /* * {
     -ms-overflow-style: none;
 }
