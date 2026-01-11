@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import Image from 'next/image'
+import Link from "next/link";
+import Image from "next/image";
 //import styled from 'styled-components'
 
 /* const GameItem = styled(Image)`
@@ -7,10 +7,17 @@ import Image from 'next/image'
     border-radius: 15px;
 `*/
 
-export const GameCard = ({src, alt, slug}) => {
-    return (
-        <Link href={`/games/${slug}`}>
-            <Image className="rounded-lg border-black border-solid border-2 aspect-9/12 hover:border-gray-200 hover:border-4 transition-all" src={src} alt={alt} height={300} width={240} quality={100} />
-        </Link>
-    )
-}
+export const GameCard = ({ src, alt, slug }) => {
+  return (
+    <Link href={`/games/${slug}`}>
+      <Image
+        className="rounded-lg border-black border-solid border-2 aspect-9/12 hover:border-text-primary/70 hover:border-4 transition-all"
+        src={src}
+        alt={alt}
+        height={300}
+        width={240}
+        quality={100}
+      />
+    </Link>
+  );
+};

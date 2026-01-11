@@ -55,7 +55,7 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
   const nextDisabled = currentPage === totalPages;
 
   return (
-    <div className="flex flex-row justify-evenly mx-auto p-10">
+    <div className="flex flex-row justify-evenly mx-auto pt-10 pb-10">
       <button
         className={`btn-pagination-base btn-pagination-nav`}
         disabled={prevDisabled}
