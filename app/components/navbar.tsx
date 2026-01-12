@@ -9,6 +9,7 @@ import { auth } from "../../auth";
 //import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
 // import { FaChevronDown } from 'react-icons/fa6'
 import { IoIosArrowDown } from "react-icons/io";
+import { IoIosLogOut } from "react-icons/io";
 
 //import { useSession } from 'next-auth/react'
 //import { SignOut } from '../ui/form'
@@ -78,6 +79,18 @@ export default async function Navbar() {
                 >
                   Settings
                 </Link>
+
+                <div className="border-b border-solid border-gray-500/50" />
+
+                <button
+                  onClick={async () => {
+                    "use server";
+                    await signOut();
+                  }}
+                  className="px-4 py-2 flex flex-row items-center text-text-primary hover:bg-primary/70 hover:text-white transition-colors cursor-pointer"
+                >
+                  Log out <IoIosLogOut className="ml-0.5 mt-1.25" />
+                </button>
               </div>
 
               <p className="flex items-center px-4 py-2 text-left w-full">
