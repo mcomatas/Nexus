@@ -94,7 +94,7 @@ export default function ReviewForm({ game }) {
 
   if (status === "loading" || reviewLoading) {
     return (
-      <div className="bg-gray-400 rounded-sm mt-15 p-5 w-50 text-white">
+      <div className="bg-surface-elevated rounded-lg mt-15 p-5 w-50 text-white">
         Loading review...
       </div>
     );
@@ -102,7 +102,7 @@ export default function ReviewForm({ game }) {
 
   if (!session) {
     return (
-      <div className="bg-gray-400 rounded-sm mt-15 p-5 w-50 text-white">
+      <div className="bg-surface-elevated rounded-lg mt-15 p-5 w-50 text-text-primary">
         You need to be signed in to review a game.
       </div>
     );

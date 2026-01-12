@@ -1,51 +1,55 @@
-import { login, createUser } from '../actions';
+import { login, createUser } from "../actions";
 //import { useState } from 'react';
-import { signIn, signOut } from '../../auth';
+import { signIn, signOut } from "../../auth";
 
-const FormInput = ({placeholder, type, name}) => {
-    return (
-        <input
-            placeholder={placeholder}
-            type={type}
-            name={name}
-            className="bg-gray-100 text-gray-700 rounded-sm p-1 w-1/2 min-w-45 mx-auto"
-        />
-    )
-}
+const FormInput = ({ placeholder, type, name, className }) => {
+  return (
+    <input
+      placeholder={placeholder}
+      type={type}
+      name={name}
+      className={className}
+    />
+  );
+};
 
 export function SignIn() {
-    return (
-        <form
-            action={async (formData) => {
-                'use server'
-                await signIn("resend", formData, { redirectTo: '/' } )
-            }}
-            className="flex flex-col p-10 space-y-10"
-        >
-            <FormInput type="text" name="email" placeholder="Email" />
-            <button 
-                type="submit"
-                className="bg-fuchsia-200 text-gray-800 w-30 mx-auto rounded-md"
-            >
-                Sign in with Resend
-            </button>
-        </form>
-    )
+  return (
+    <form
+      action={async (formData) => {
+        "use server";
+        await signIn("resend", formData, { redirectTo: "/" });
+      }}
+      className="flex flex-col p-10 space-y-10"
+    >
+      <FormInput
+        className="bg-background-mid rounded-lg p-2.5 border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
+        type="text"
+        name="email"
+        placeholder="Email"
+      />
+      <button
+        type="submit"
+        className="bg-primary hover:bg-primary-dark text-white mx-auto rounded-lg p-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer"
+      >
+        Continue with email
+      </button>
+    </form>
+  );
 }
 
 export function SignOut() {
-    return (
-        <form
-            action={async () => {
-                'use server'
-                await signOut()
-            }}
-        >
-            <button type="submit">Sign Out</button>
-        </form>
-    )
+  return (
+    <form
+      action={async () => {
+        "use server";
+        await signOut();
+      }}
+    >
+      <button type="submit">Sign Out</button>
+    </form>
+  );
 }
-
 
 /*export function LoginForm() {
     //const [message, setMessage] = useState("");
@@ -62,7 +66,7 @@ export function SignOut() {
             setMessage(`${response.message}`)
         }
     }
-    
+
     return (
         <form
             onSubmit={handleLogin}
@@ -95,7 +99,7 @@ export function SignUpForm() {
             setMessage(`Error: ${response.message}`);
         }
     }
-    
+
     return (
         <form
             onSubmit={handleSubmit}
