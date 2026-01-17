@@ -48,9 +48,8 @@ export default function Page({ params }) {
   return (
     <div>
       {/* Display the canonical username from the API if available, otherwise show the URL param */}
-      Hello {data?.user?.name ?? username}.
       <br />
-      <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-4/5 mx-auto">
+      <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-5xl mx-auto">
         {gamesArray}
       </div>
       {/*

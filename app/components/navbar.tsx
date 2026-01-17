@@ -55,11 +55,15 @@ export default async function Navbar() {
           <Search placeholder="Search Game" />
           {session?.user ? (
             <div className="relative inline-block group text-sm">
-              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-navbar-glass rounded-sm z-10">
-                <div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-text-primary border-b border-solid border-gray-500/50">
+              <p className="flex items-center px-4 py-2 text-left w-full">
+                {session?.user.name}{" "}
+                <IoIosArrowDown className="ml-0.5 mt-1.25 group-hover:-rotate-180 duration-200 transition-transform" />
+              </p>
+              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-surface rounded-sm z-10">
+                {/*<div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-text-primary border-b border-solid border-gray-500/50">
                   {session?.user.name}
                   <IoIosArrowDown className="ml-0.5 mt-1.25" />
-                </div>
+                  </div>*/}
 
                 <Link
                   href="/"
@@ -92,11 +96,6 @@ export default async function Navbar() {
                   Log out <IoIosLogOut className="ml-0.5 mt-1.25" />
                 </button>
               </div>
-
-              <p className="flex items-center px-4 py-2 text-left w-full">
-                {session?.user.name}{" "}
-                <IoIosArrowDown className="ml-0.5 mt-1.25" />
-              </p>
             </div>
           ) : (
             <NavbarLink href="/login">Login</NavbarLink>
