@@ -21,7 +21,7 @@ export default function Page() {
   //console.log(data);
 
   const gamesArray = data.map((game) => (
-    <div key={game.id}>
+    <div key={game.id} className="snap-center flex-shrink-0 w-64">
       <GameCard
         src={
           game.cover
@@ -37,7 +37,9 @@ export default function Page() {
   return (
     <div className="flex flex-col mx-auto p-5">
       <h1 className="text-2xl">Welcome to the Nexus homepage!</h1>
-      {gamesArray}
+      <div className="flex flex-nowrap gap-4 overflow-x-auto snap-x snap-mandatory pb-4">
+        {gamesArray}
+      </div>
     </div>
   );
 }
