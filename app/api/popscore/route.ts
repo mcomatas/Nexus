@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   const accessToken = await getAccessToken();
 
   const body =
-    "fields game_id,value,popularity_type; sort value desc; limit 10; where popularity_type = 1;";
+    "fields game_id,value,popularity_type; sort value desc; limit 10; where popularity_type = 3;";
 
   const popResponse = await fetch(
     "https://api.igdb.com/v4/popularity_primitives",

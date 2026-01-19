@@ -37,7 +37,13 @@ export default function Page() {
   return (
     <div className="flex flex-col mx-auto p-5">
       <h1 className="text-2xl">Welcome to the Nexus homepage!</h1>
-      <div className="flex flex-nowrap gap-4 overflow-x-auto snap-x snap-mandatory pb-4">
+      <p className="text-text-secondary pb-10">
+        A site to log, review, and discover new video games
+      </p>
+      <div
+        className="flex flex-nowrap gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {gamesArray}
       </div>
     </div>
