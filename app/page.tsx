@@ -16,19 +16,41 @@ export default function Page() {
   //console.log(session?.user?.email);
 
   const fetcher = (url) => fetch(url).then((r) => r.json());
-  const { data, error, isLoading } = useSWR(`/api/popscore`, fetcher);
-  const scrollRef = useRef(null);
+  const {
+    data: igdbData,
+    error: igdbError,
+    isLoading: igdbLoading,
+  } = useSWR(`/api/popscore/igdbPlaying`, fetcher);
+  const {
+    data: steamData,
+    error: steamError,
+    isLoading: steamLoading,
+  } = useSWR(`/api/popscore/steamPeak`, fetcher);
 
-  const scroll = (direction) => {
+  //const scrollRef = useRef(null);
+
+  /*const scroll = (direction) => {
     scrollRef.current?.scrollBy({ left: direction * 600, behavior: "smooth" });
-  };
+  };*/
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading games</p>;
+  if (igdbLoading || steamLoading) return <p>Loading...</p>;
+  if (igdbError || steamError) return <p>Error loading games</p>;
 
-  //console.log(data);
+  const igdbGames = igdbData.map((game) => (
+    <div key={game.id} className="snap-center flex-shrink-0 w-64">
+      <GameCard
+        src={
+          game.cover
+            ? "https:" + game.cover.url.replace("t_thumb", "t_720p")
+            : "/default-cover.webp"
+        }
+        alt={game.slug}
+        slug={game.slug}
+      />
+    </div>
+  ));
 
-  const gamesArray = data.map((game) => (
+  const steamGames = steamData.map((game) => (
     <div key={game.id} className="snap-center flex-shrink-0 w-64">
       <GameCard
         src={
@@ -51,8 +73,9 @@ export default function Page() {
         </p>
       </div>
 
-      {/*Carousel container*/}
-      <GameCarousel games={gamesArray} header="Top 10 IGDB Playing" />
+      {/* Carousels */}
+      <GameCarousel games={igdbGames} header="Top 10 IGDB Playing" />
+      <GameCarousel games={steamGames} header="Top Viewed Steam Games" />
     </div>
   );
 }
