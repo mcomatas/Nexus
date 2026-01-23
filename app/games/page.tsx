@@ -1,6 +1,7 @@
 "use client";
 
 import { GameCard } from "../components/gamecard";
+import { Loading } from "../components/loading";
 import Pagination from "../ui/pagination";
 import { use } from "react";
 import useSWR from "swr";
@@ -17,13 +18,17 @@ export default function Page(props: {
   const query = searchParams?.query || "";
   const page = searchParams?.page || 1;
 
+  const Spinner = () => {
+    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />;
+  };
+
   const fetcher = (url) => fetch(url).then((r) => r.json());
   const { data, error, isLoading } = useSWR(
     `/api/games?query=${query}&page=${page}`,
     fetcher,
   );
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loading />; //<p>Loading...</p>;
   if (error) return <p>Error loading games</p>;
 
   const gamesArray = data.games.map((game) => (

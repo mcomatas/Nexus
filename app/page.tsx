@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { useRef } from "react";
 import { IoArrowForward, IoArrowBack } from "react-icons/io5";
 import { GameCarousel } from "./components/gameCarousel";
+import { Loading } from "./components/loading";
 
 export default function Page() {
   //const session = await auth();
@@ -33,7 +34,7 @@ export default function Page() {
     scrollRef.current?.scrollBy({ left: direction * 600, behavior: "smooth" });
   };*/
 
-  if (igdbLoading || steamLoading) return <p>Loading...</p>;
+  if (igdbLoading || steamLoading) return <Loading />;
   if (igdbError || steamError) return <p>Error loading games</p>;
 
   const igdbGames = igdbData.map((game) => (

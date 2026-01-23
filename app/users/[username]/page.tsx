@@ -4,6 +4,7 @@
 import { use } from "react";
 import { signOut } from "next-auth/react";
 import { GameCard } from "../../components/gamecard";
+import { Loading } from "../../components/loading";
 import Pagination from "../../ui/pagination";
 import useSWR from "swr";
 
@@ -28,7 +29,7 @@ export default function Page({ params }) {
     fetcher,
   );
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loading />;
   if (error) return <p>Error loading games.</p>;
 
   const gamesArray = (data?.games ?? []).map((game) => (

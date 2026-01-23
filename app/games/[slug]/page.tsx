@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageModal } from "../../components/imageModal";
+import { Loading } from "../../components/loading";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { use } from "react";
@@ -26,7 +27,7 @@ export default function Page({ params }) {
     isLoading: reviewsLoading,
   } = useSWR(`/api/review/${slug}/get`, fetcher);
 
-  if (gameLoading) return <p>Loading...</p>;
+  if (gameLoading) return <Loading />;
   if (gameError) return <p>Error loading game.</p>;
 
   // Some games might not have involved_companies returned. This would result
