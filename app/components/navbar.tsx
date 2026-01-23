@@ -1,7 +1,6 @@
 import Link from "next/link";
 // import { usePathname } from 'next/navigation'
 import "../ui/global.css";
-import { inter, rowdies } from "../ui/fonts";
 import styled from "styled-components";
 import Search from "../ui/search";
 import { auth } from "../../auth";
@@ -45,7 +44,7 @@ export default async function Navbar() {
   //console.log(session?.user.email);
 
   return (
-    <div className="w-full bg-navbar-glass text-text-primary sticky top-0 z-50">
+    <div className="w-full bg-navbar-glass text-text-primary sticky top-0 z-50 font-heading">
       <div className="flex justify-between items-center max-w-4xl mx-auto p-4">
         <Link href="/" className="text-2xl font-bold">
           Nexus

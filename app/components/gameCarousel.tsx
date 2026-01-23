@@ -12,7 +12,7 @@ export const GameCarousel = ({ games, header }) => {
   return (
     <div>
       <div className="relative px-12">
-        <h1 className="text-xl font-semibold px-2 pt-2 pb-1">{header}</h1>
+        <h1 className="text-xl font-semibold px-2 pt-2 pb-2">{header}</h1>
         <div className="border-b border-0.5 border-text-muted" />
         {/* Left Button */}
         <button

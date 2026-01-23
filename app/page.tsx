@@ -67,7 +67,9 @@ export default function Page() {
   return (
     <div className="flex flex-col mx-auto p-5">
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-3xl">Welcome to the Nexus homepage!</h1>
+        <h1 className="font-heading text-3xl">
+          Welcome to the Nexus homepage!
+        </h1>
         <p className="text-text-secondary pb-10">
           A site to log, review, and discover new video games
         </p>
