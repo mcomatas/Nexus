@@ -3,6 +3,8 @@
 import { useSession } from "../../auth-client";
 import { useState } from "react";
 import { Loading } from "./loading";
+import { UploadButton } from "../utils/uploadthing";
+import ProfilePicture from "./profilePicture";
 
 export default function SettingsForm() {
   const { data: session, isPending } = useSession();
@@ -47,6 +49,8 @@ export default function SettingsForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col p-5 space-y-6">
+      <ProfilePicture />
+
       <div className="flex flex-col space-y-2">
         <label className="text-text-secondary text-sm">Username</label>
         <input

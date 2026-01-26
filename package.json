@@ -8,6 +8,7 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "@tailwindcss/postcss": "^4.0.9",
+    "@uploadthing/react": "^7.3.3",
     "better-auth": "^1.4.17",
     "eslint-config-next": "16.0.0",
     "next": "^16.1.1",
@@ -19,6 +20,7 @@
     "styled-components": "^6.1.11",
     "swr": "^2.3.3",
     "tailwindcss": "^4.0.9",
+    "uploadthing": "^7.7.4",
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {
