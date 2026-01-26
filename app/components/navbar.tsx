@@ -45,7 +45,7 @@ export default function Navbar() {
                 {session?.user.name}{" "}
                 <IoIosArrowDown className="ml-0.5 mt-1.25 group-hover:-rotate-180 duration-200 transition-transform" />
               </p>
-              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-surface rounded-sm z-10">
+              <div className="hidden group-hover:flex flex-col absolute pb-2 bg-surface rounded-sm z-10 whitespace-nowrap">
                 <Link
                   href="/"
                   className="px-4 py-2 text-text-primary hover:text-white hover:bg-primary/70 transition-colors"
