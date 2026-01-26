@@ -1,11 +1,13 @@
 "use client";
 
-//import { SignOut } from '../../ui/form';
-import { use } from "react";
+import { use, useState, useEffect } from "react";
+import { useSession } from "../../../auth-client";
 import { GameCard } from "../../components/gamecard";
 import { Loading } from "../../components/loading";
 import Pagination from "../../ui/pagination";
 import useSWR from "swr";
+import Link from "next/link";
+import { DEFAULT_PROFILE_IMAGE } from "../../lib/constants";
 
 interface Props {
   params: {
@@ -21,6 +23,14 @@ export default function Page({ params }) {
   // which we want to display to the user.
   const obj = use(params);
   const username = obj["username"];
+  const { data: session, isPending } = useSession();
+  const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    if (session?.user?.image) {
+      setImageUrl(session.user.image);
+    }
+  }, [session]);
 
   const fetcher = (url) => fetch(url).then((r) => r.json());
   const { data, error, isLoading } = useSWR(
@@ -46,9 +56,29 @@ export default function Page({ params }) {
   ));
 
   return (
-    <div>
-      {/* Display the canonical username from the API if available, otherwise show the URL param */}
-      <br />
+    <div className="flex flex-col mx-auto max-w-4xl w-full px-6">
+      <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center pt-5 pb-5">
+          <img
+            src={imageUrl || DEFAULT_PROFILE_IMAGE}
+            alt="Profile"
+            className="w-24 h-24 object-cover rounded-full overflow-hidden"
+          />
+          <h1 className="px-3 text-3xl font-semibold">{session?.user?.name}</h1>
+          <Link
+            href="/settings"
+            className="bg-primary mt-1 hover:bg-primary-dark text-white text-xs w-fit rounded-md px-2 py-2 font-semibold transition-all hover:shadow-lg cursor-pointer"
+          >
+            EDIT PROFILE
+          </Link>
+        </div>
+        <div className="text-center">
+          <h1 className="font-semibold text-2xl">{gamesArray.length}</h1>
+          <h1 className="text-xs text-text-secondary">GAMES</h1>
+        </div>
+      </div>
+      <h1 className="pt-5 pb-1 text-lg text-text-secondary">GAMES</h1>
+      <div className="border-b border-0.5 border-text-muted" />
       <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-5xl mx-auto">
         {gamesArray}
       </div>
