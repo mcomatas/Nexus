@@ -7,6 +7,8 @@ import { useSession, signOut } from "../../auth-client";
 import { useRouter } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosLogOut } from "react-icons/io";
+import { useState, useEffect } from "react";
+import { DEFAULT_PROFILE_IMAGE } from "../lib/constants";
 
 const NavbarLink = ({ href, children, className = "", ...props }) => {
   return (
@@ -22,6 +24,13 @@ const NavbarLink = ({ href, children, className = "", ...props }) => {
 export default function Navbar() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    if (session?.user?.image) {
+      setImageUrl(session.user.image);
+    }
+  }, [session]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -41,10 +50,17 @@ export default function Navbar() {
             <div className="w-20 h-8 bg-surface animate-pulse rounded-md" />
           ) : session?.user ? (
             <div className="relative inline-block group text-sm">
-              <p className="flex items-center px-4 py-2 text-left w-full">
-                {session?.user.name}{" "}
-                <IoIosArrowDown className="ml-0.5 mt-1.25 group-hover:-rotate-180 duration-200 transition-transform" />
-              </p>
+              <div className="flex flex-row items-center">
+                <img
+                  src={imageUrl || DEFAULT_PROFILE_IMAGE}
+                  alt="Profile"
+                  className="w-7 h-7 object-cover rounded-full"
+                />
+                <p className="flex items-center px-1.5 py-2 text-left w-full">
+                  {session?.user.name}{" "}
+                  <IoIosArrowDown className="ml-0.5 mt-1.25 group-hover:-rotate-180 duration-200 transition-transform" />
+                </p>
+              </div>
               <div className="hidden group-hover:flex flex-col absolute pb-2 bg-surface rounded-sm z-10 whitespace-nowrap">
                 <Link
                   href="/"

@@ -3,13 +3,12 @@
 import { useUploadThing } from "../utils/uploadthing";
 import { useRef, useState, useEffect } from "react";
 import { useSession, authClient } from "../../auth-client";
+import { DEFAULT_PROFILE_IMAGE } from "../lib/constants";
 
 export default function ProfilePicture() {
   const { data: session, isPending } = useSession();
   const [imageUrl, setImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const defaultImage =
-    "https://i61lmhw0q5.ufs.sh/f/M3hNjJxnCROHCOdTBPzTjrhi19M43YR2Em6ntANoQa08k5gs";
 
   // Sync imageUrl when session loads
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function ProfilePicture() {
         className="cursor-pointer relative w-36 h-36 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all"
       >
         <img
-          src={imageUrl || defaultImage}
+          src={imageUrl || DEFAULT_PROFILE_IMAGE}
           alt="Profile"
           className="w-full h-full object-cover"
         />
