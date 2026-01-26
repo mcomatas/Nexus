@@ -6,16 +6,16 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.8.0",
     "@prisma/client": "^6.5.0",
     "@tailwindcss/postcss": "^4.0.9",
+    "better-auth": "^1.4.17",
     "eslint-config-next": "16.0.0",
     "next": "^16.1.1",
-    "next-auth": "^5.0.0-beta.25",
     "postcss": "^8.5.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-icons": "^5.5.0",
+    "resend": "^6.8.0",
     "styled-components": "^6.1.11",
     "swr": "^2.3.3",
     "tailwindcss": "^4.0.9",

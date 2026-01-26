@@ -1,23 +1,25 @@
-import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma } from './prisma';
-import Resend from 'next-auth/providers/resend'
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { magicLink } from "better-auth/plugins";
+import { prisma } from "./prisma";
+import { Resend } from "resend";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    providers: [Resend({
-        from: "onboarding@resend.dev"
-    })],
-    callbacks: {
-        session({ session, user }) {
-            session.user.id = user.id;
-            return session;
-        },
-    }
+const resend = new Resend(process.env.AUTH_RESEND_KEY);
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await resend.emails.send({
+          from: "onboarding@resend.dev",
+          to: email,
+          subject: "Sign in to Nexus",
+          html: `<a href="${url}">Click here to sign in</a>`,
+        });
+      },
+    }),
+  ],
 });
-
-declare module "next-auth" {
-  interface User {
-    playedGames?: number[];
-  }
-}

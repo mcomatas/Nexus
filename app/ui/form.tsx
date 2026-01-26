@@ -1,120 +1,92 @@
-import { login, createUser } from "../actions";
-//import { useState } from 'react';
-import { signIn, signOut } from "../../auth";
+"use client";
 
-const FormInput = ({ placeholder, type, name, className }) => {
+import { useState } from "react";
+import { authClient } from "../../auth-client";
+
+const FormInput = ({ placeholder, type, name, className, value, onChange }) => {
   return (
     <input
       placeholder={placeholder}
       type={type}
       name={name}
       className={className}
+      value={value}
+      onChange={onChange}
     />
   );
 };
 
 export function SignIn() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const { error } = await authClient.signIn.magicLink({
+        email,
+        callbackURL: "/",
+      });
+
+      if (error) {
+        setError(error.message || "Failed to send magic link");
+      } else {
+        setSent(true);
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="flex flex-col p-10 space-y-4 text-center">
+        <p className="text-text-primary text-lg">Check your email!</p>
+        <p className="text-text-secondary">
+          We sent a magic link to <strong>{email}</strong>
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form
-      action={async (formData) => {
-        "use server";
-        await signIn("resend", formData, { redirectTo: "/" });
-      }}
-      className="flex flex-col p-10 space-y-10"
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col p-10 space-y-10">
       <FormInput
         className="bg-background-mid rounded-lg p-2.5 border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
-        type="text"
+        type="email"
         name="email"
         placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       <button
         type="submit"
-        className="bg-primary hover:bg-primary-dark text-white mx-auto rounded-lg p-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer"
+        disabled={loading}
+        className="bg-primary hover:bg-primary-dark text-white mx-auto rounded-lg p-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer disabled:opacity-50"
       >
-        Continue with email
+        {loading ? "Sending..." : "Continue with email"}
       </button>
     </form>
   );
 }
 
 export function SignOut() {
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    window.location.href = "/";
+  };
+
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut();
-      }}
-    >
-      <button type="submit">Sign Out</button>
-    </form>
+    <button onClick={handleSignOut} type="button">
+      Sign Out
+    </button>
   );
 }
-
-/*export function LoginForm() {
-    //const [message, setMessage] = useState("");
-
-    async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-
-        const response = await login(formData);
-        console.log(response);
-        if(response.success) {
-            setMessage("Login successful");
-        } else {
-            setMessage(`${response.message}`)
-        }
-    }
-
-    return (
-        <form
-            onSubmit={handleLogin}
-            className="flex flex-col p-10 space-y-10"
-        >
-            <FormInput placeholder="Username" type="text" name="username" />
-            <FormInput placeholder="Password" type="password" name="password" />
-            <input
-                type="submit"
-                value="Login"
-                className="bg-fuchsia-200  text-gray-800 w-30 mx-auto rounded-md"
-            />
-            {message && <p>{message}</p>}
-        </form>
-    )
-}
-
-export function SignUpForm() {
-    //const [message, setMessage] = useState("");
-
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault(); // Stops page from refresing and allows form submission asynchronously
-        const formData = new FormData(event.currentTarget);
-
-        const response = await createUser(formData);
-        console.log(response);
-        /*if (response.success) {
-            setMessage("User created successfully");
-        } else {
-            setMessage(`Error: ${response.message}`);
-        }
-    }
-
-    return (
-        <form
-            onSubmit={handleSubmit}
-            className="flex flex-col p-10 space-y-10"
-        >
-            <FormInput placeholder="Username" type="text" name="username" />
-            <FormInput placeholder="Email" type="email" name="email" />
-            <FormInput placeholder="Password" type="password" name="password" />
-            <FormInput placeholder="Verify Password" type="password" name="password2" />
-            <input
-                type="submit"
-                value="Sign Up"
-                className="bg-fuchsia-200 text-gray-800 w-30 mx-auto rounded-md"
-            />
-            {message && <p>{message}</p>}
-        </form>
-    )
-}*/

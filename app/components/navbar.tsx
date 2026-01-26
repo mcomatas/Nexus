@@ -1,32 +1,14 @@
+"use client";
+
 import Link from "next/link";
-// import { usePathname } from 'next/navigation'
 import "../ui/global.css";
-import styled from "styled-components";
 import Search from "../ui/search";
-import { auth } from "../../auth";
-// import { useState, useEffect } from 'react';
-//import { FaAngleDown, FaChevronDown } from 'react-icons/fa';
-// import { FaChevronDown } from 'react-icons/fa6'
+import { useSession, signOut } from "../../auth-client";
+import { useRouter } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosLogOut } from "react-icons/io";
 
-//import { useSession } from 'next-auth/react'
-//import { SignOut } from '../ui/form'
-import { signOut } from "../../auth";
-
-//have a Link Item here for more stylization than just Nextjs Link
-/*const NavbarLink = styled(Link)`
-    color: blue;
-    text-decoration: none;
-    &:hover {
-        a {
-
-        }
-    }
-`*/
-
 const NavbarLink = ({ href, children, className = "", ...props }) => {
-  //const active = usePathname() === href
   return (
     <Link
       className={`text-md hover:bg-primary/30 transition rounded-md px-3 py-2 ${className}`}
@@ -37,11 +19,14 @@ const NavbarLink = ({ href, children, className = "", ...props }) => {
   );
 };
 
-export default async function Navbar() {
-  const session = await auth();
-  //console.log(session);
-  //const name = session?.user.name;
-  //console.log(session?.user.email);
+export default function Navbar() {
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.refresh();
+  };
 
   return (
     <div className="w-full bg-navbar-glass text-text-primary sticky top-0 z-50 font-heading">
@@ -52,18 +37,15 @@ export default async function Navbar() {
         <div className="flex justify-evenly items-center gap-x-6">
           <NavbarLink href="/games">Games</NavbarLink>
           <Search placeholder="Search Game" />
-          {session?.user ? (
+          {isPending ? (
+            <div className="w-20 h-8 bg-surface animate-pulse rounded-md" />
+          ) : session?.user ? (
             <div className="relative inline-block group text-sm">
               <p className="flex items-center px-4 py-2 text-left w-full">
                 {session?.user.name}{" "}
                 <IoIosArrowDown className="ml-0.5 mt-1.25 group-hover:-rotate-180 duration-200 transition-transform" />
               </p>
               <div className="hidden group-hover:flex flex-col absolute pb-2 bg-surface rounded-sm z-10">
-                {/*<div className="flex items-center px-4 py-2 mb-2 text-left w-full group-hover:text-text-primary border-b border-solid border-gray-500/50">
-                  {session?.user.name}
-                  <IoIosArrowDown className="ml-0.5 mt-1.25" />
-                  </div>*/}
-
                 <Link
                   href="/"
                   className="px-4 py-2 text-text-primary hover:text-white hover:bg-primary/70 transition-colors"
@@ -86,10 +68,7 @@ export default async function Navbar() {
                 <div className="border-b border-solid border-gray-500/50" />
 
                 <button
-                  onClick={async () => {
-                    "use server";
-                    await signOut();
-                  }}
+                  onClick={handleSignOut}
                   className="px-4 py-2 flex flex-row items-center text-text-primary hover:bg-primary/70 hover:text-white transition-colors cursor-pointer"
                 >
                   Log out <IoIosLogOut className="ml-0.5 mt-1.25" />

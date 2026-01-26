@@ -1,23 +1,28 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { prisma } from "../../prisma";
+import { useSession } from "../../auth-client";
 import { useState, useEffect } from "react";
 import { IoGameController, IoGameControllerOutline } from "react-icons/io5";
 
-//className="bg-primary text-text-primary text-xl rounded-md mr-auto pl-2 pr-2 pt-0.5 pb-0.5 hover:bg-primary-dark transition-all cursor-pointer"
-
 export default function AddRemoveButton({ game }) {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = useSession();
   const [played, setPlayed] = useState(false);
 
   useEffect(() => {
-    if (session?.user?.playedGames) {
-      setPlayed(session.user.playedGames.includes(game.id));
+    // Check if user has played this game by fetching from API
+    if (session?.user) {
+      fetch(`/api/users/${session.user.name}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user?.playedGames) {
+            setPlayed(data.user.playedGames.includes(game.id));
+          }
+        })
+        .catch(console.error);
     }
-  }, [session]);
+  }, [session, game.id]);
 
-  if (status === "loading") return null;
+  if (isPending) return null;
 
   const handleAdd = async () => {
     if (!session?.user) {

@@ -5,7 +5,6 @@ import { Loading } from "../../components/loading";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { use } from "react";
-import { SessionProvider } from "next-auth/react";
 import ReviewForm from "../../components/reviewForm";
 import useSWR from "swr";
 
@@ -111,9 +110,7 @@ export default function Page({ params }) {
           </button>
         </div>
         <div className="w-50">
-          <SessionProvider>
-            <ReviewForm game={game} />
-          </SessionProvider>
+          <ReviewForm game={game} />
         </div>
       </div>
       <div className="flex flex-col max-w-3/5 mx-auto p-2">

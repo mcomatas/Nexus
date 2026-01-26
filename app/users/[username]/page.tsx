@@ -2,7 +2,6 @@
 
 //import { SignOut } from '../../ui/form';
 import { use } from "react";
-import { signOut } from "next-auth/react";
 import { GameCard } from "../../components/gamecard";
 import { Loading } from "../../components/loading";
 import Pagination from "../../ui/pagination";

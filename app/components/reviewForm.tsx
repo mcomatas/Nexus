@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession } from "../../auth-client";
 import React, { useState, useEffect } from "react";
 import AddRemoveButton from "./addRemoveButton";
 import { GameCard } from "./gamecard";
@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { IoClose } from "react-icons/io5";
 
 export default function ReviewForm({ game }) {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   const [score, setScore] = useState("");
@@ -30,7 +30,7 @@ export default function ReviewForm({ game }) {
     data: reviewData,
     error: reviewError,
     isLoading: reviewLoading,
-  } = useSWR(`/api/users/review/${game.slug}/get`, fetcher);
+  } = useSWR(session?.user ? `/api/users/review/${game.slug}/get` : null, fetcher);
 
   useEffect(() => {
     if (reviewData) {
@@ -76,11 +76,13 @@ export default function ReviewForm({ game }) {
         console.log(addGameData);
       }
 
-      const reviewData = await reviewResponse.json();
+      const data = await reviewResponse.json();
 
       if (reviewResponse.ok) closeModal();
     } catch (error) {
       console.log(error);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -92,7 +94,7 @@ export default function ReviewForm({ game }) {
     setIsOpen(false);
   };
 
-  if (status === "loading" || reviewLoading) {
+  if (isPending || reviewLoading) {
     return (
       <div className="bg-surface-elevated rounded-lg mt-15 p-5 w-50 text-white">
         Loading review...
@@ -166,9 +168,10 @@ export default function ReviewForm({ game }) {
                 />
                 <button
                   type="submit"
-                  className="bg-primary hover:bg-primary-dark text-white w-30 mx-auto rounded-lg py-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer"
+                  disabled={submitting}
+                  className="bg-primary hover:bg-primary-dark text-white w-30 mx-auto rounded-lg py-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer disabled:opacity-50"
                 >
-                  Save
+                  {submitting ? "Saving..." : "Save"}
                 </button>
               </form>
             </div>
