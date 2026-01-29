@@ -43,7 +43,7 @@ export default function Filter({
 
   return (
     <div className="relative inline-block group text-sm">
-      <p className="flex items-center px-1.5 py-2 text-left w-full">
+      <p className="flex items-center pl-2 text-left w-full">
         {currentLabel}
         <IoIosArrowDown className="ml-0.5 group-hover:-rotate-180 duration-200 transition-transform" />
       </p>
