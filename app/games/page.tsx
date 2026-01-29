@@ -53,11 +53,7 @@ export default function Page(props: {
   return (
     <div>
       <div className="max-w-5xl px-10 mx-auto">
-        <Filter
-          paramName="genres"
-          options={genreOptions}
-          placeholder="All Genres"
-        />
+        <Filter paramName="genres" options={genreOptions} placeholder="GENRE" />
         <h1 className="flex mx-auto text-md pt-2 text-text-secondary mt-5">
           GAMES
         </h1>
