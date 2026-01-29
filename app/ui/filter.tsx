@@ -42,7 +42,7 @@ export default function Filter({
   };
 
   return (
-    <div className="relative inline-block group text-md">
+    <div className="relative inline-block group text-sm">
       <p className="flex items-center px-1.5 py-2 text-left w-full">
         {currentLabel}
         <IoIosArrowDown className="ml-0.5 group-hover:-rotate-180 duration-200 transition-transform" />
@@ -50,7 +50,7 @@ export default function Filter({
       <div className="hidden group-hover:flex flex-col absolute pt-1 pb-1 bg-surface rounded-sm whitespace-nowrap">
         <span
           onClick={() => handleSelect("")}
-          className="px-4 py-2 text-sm hover:bg-primary/70 cursor-pointer"
+          className="px-4 py-2 text-sm text-text-primary hover:bg-primary/70 cursor-pointer"
         >
           All
         </span>
@@ -58,7 +58,7 @@ export default function Filter({
           <span
             key={option.value}
             onClick={() => handleSelect(String(option.value))}
-            className="px-4 py-2 text-sm hover:bg-primary/70 cursor-pointer"
+            className="px-4 py-2 text-sm text-text-primary hover:bg-primary/70 cursor-pointer"
           >
             {option.label}
           </span>

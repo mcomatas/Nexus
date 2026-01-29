@@ -53,7 +53,15 @@ export default function Page(props: {
   return (
     <div>
       <div className="max-w-5xl px-10 mx-auto">
-        <Filter paramName="genres" options={genreOptions} placeholder="GENRE" />
+        <div className="flex flex-row items-center w-fit text-sm text-text-secondary border-text-secondary/30 border-1 px-2 mt-5 rounded-md">
+          <span>BROWSE BY</span>
+          <div className="h-10 border-r border-text-secondary/30 px-1" />
+          <Filter
+            paramName="genres"
+            options={genreOptions}
+            placeholder="GENRE"
+          />
+        </div>
         <h1 className="flex mx-auto text-md pt-2 text-text-secondary mt-5">
           GAMES
         </h1>
