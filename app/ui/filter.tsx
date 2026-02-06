@@ -36,8 +36,10 @@ export default function Filter({
     } else {
       params.delete(paramName);
     }
-    params.set("page", "1");
-    params.set("query", "");
+    //params.set("page", "1");
+    //params.set("query", "");
+    params.delete("page");
+    params.delete("query");
     replace(`${pathname}?${params.toString()}`);
   };
 

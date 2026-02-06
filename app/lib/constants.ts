@@ -26,3 +26,12 @@ export const GENRES = {
   Card_and_Board_Game: 35,
   MOBA: 36,
 };
+
+export const DECADES = {
+  "2020s": 2020,
+  "2010s": 2010,
+  "2000s": 2000,
+  "1990s": 1990,
+  "1980s": 1980,
+  "1970s": 1970,
+};

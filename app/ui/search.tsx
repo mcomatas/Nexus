@@ -25,7 +25,9 @@ export default function Search({ placeholder }: { placeholder: string }) {
   const handleSearch = (term) => {
     const params = new URLSearchParams(searchParams);
     params.set("query", term);
-    params.set("page", "1");
+    params.delete("page");
+    params.delete("genres");
+    params.delete("years");
     replace(`/games?${params.toString()}`);
   };
 

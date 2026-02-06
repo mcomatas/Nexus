@@ -16,11 +16,20 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get("page")) || 1;
   const offset = (page - 1) * PAGE_SIZE;
   const genres = searchParams.get("genres");
-  //console.log("Query: ", query);
-  //console.log("Page: ", page);
-  console.log(genres);
+  const years = searchParams.get("years");
+
   let whereClause = "cover != null & game_type = (0,8) & version_parent = null";
   if (genres) whereClause += ` & genres = (${genres})`;
+  if (years) {
+    const startYear = parseInt(years);
+    const startTimestamp = Math.floor(
+      new Date(`${startYear}-01-01`).getTime() / 1000,
+    );
+    const endTimestamp = Math.floor(
+      new Date(`${startYear + 10}-01-01`).getTime() / 1000,
+    );
+    whereClause += ` & first_release_date >= ${startTimestamp} & first_release_date < ${endTimestamp}`;
+  }
 
   const bodyMain = `fields name, slug, cover.url; where ${whereClause}; limit ${PAGE_SIZE}; offset ${offset};`;
   const body =

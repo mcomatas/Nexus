@@ -6,7 +6,7 @@ import Pagination from "../ui/pagination";
 import Filter from "../ui/filter";
 import { use } from "react";
 import useSWR from "swr";
-import { GENRES } from "../lib/constants";
+import { GENRES, DECADES } from "../lib/constants";
 
 const PAGE_SIZE = 32;
 
@@ -15,21 +15,28 @@ export default function Page(props: {
     query?: string;
     page?: number;
     genres?: string;
+    years?: string;
   }>;
 }) {
   const searchParams = use(props.searchParams);
   const query = searchParams?.query || "";
   const page = searchParams?.page || 1;
   const genres = searchParams?.genres || "";
+  const decades = searchParams?.years || "";
 
   const fetcher = (url) => fetch(url).then((r) => r.json());
   const { data, error, isLoading } = useSWR(
-    `/api/games?query=${query}&page=${page}&genres=${genres}`,
+    `/api/games?query=${query}&page=${page}&genres=${genres}&years=${decades}`,
     fetcher,
   );
 
-  const genreOptions = Object.entries(GENRES).map(([name, id]) => ({
+  const genresOptions = Object.entries(GENRES).map(([name, id]) => ({
     label: name.replace(/_/g, " "),
+    value: id,
+  }));
+
+  const yearsOptions = Object.entries(DECADES).map(([name, id]) => ({
+    label: name,
     value: id,
   }));
 
@@ -58,9 +65,11 @@ export default function Page(props: {
           <div className="h-10 border-r border-text-secondary/30 px-1" />
           <Filter
             paramName="genres"
-            options={genreOptions}
+            options={genresOptions}
             placeholder="GENRE"
           />
+          <div className="h-10 border-r border-text-secondary/30 px-1" />
+          <Filter paramName="years" options={yearsOptions} placeholder="YEAR" />
         </div>
         <h1 className="flex mx-auto text-md pt-2 text-text-secondary mt-5">
           GAMES
