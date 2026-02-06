@@ -3,7 +3,7 @@
 import { ImageModal } from "../../components/imageModal";
 import { Loading } from "../../components/loading";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { use } from "react";
 import ReviewForm from "../../components/reviewForm";
 import useSWR from "swr";
@@ -12,6 +12,8 @@ export default function Page({ params }) {
   const obj = use(params);
   const slug = obj["slug"];
 
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [isClamped, setIsClamped] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -25,6 +27,13 @@ export default function Page({ params }) {
     error: reviewsError,
     isLoading: reviewsLoading,
   } = useSWR(`/api/review/${slug}/get`, fetcher);
+
+  useEffect(() => {
+    const textElement = textRef.current;
+    if (textElement) {
+      setIsClamped(textElement.scrollHeight > textElement.clientHeight);
+    }
+  }, [game]);
 
   if (gameLoading) return <Loading />;
   if (gameError) return <p>Error loading game.</p>;
@@ -97,17 +106,20 @@ export default function Page({ params }) {
           <br />
           <br />
           <p
+            ref={textRef}
             className={`text-sm ${expanded ? "line-clamp-none" : "line-clamp-8"}`}
           >
             {game.storyline || game.summary}
           </p>
           <br />
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="text-xs ml-auto hover:underline cursor-pointer"
-          >
-            {expanded ? "Read Less" : "Read More"}
-          </button>
+          {isClamped && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-xs ml-auto hover:underline cursor-pointer"
+            >
+              {expanded ? "Read Less" : "Read More"}
+            </button>
+          )}
         </div>
         <div className="w-50">
           <ReviewForm game={game} />
