@@ -38,8 +38,20 @@ export default function Page({ params }) {
     fetcher,
   );
 
+  const favoriteIds = (data?.user?.favoriteGames || []).filter((id) => id > 0);
+  const idsParam = favoriteIds.join(",");
+  const { data: favGamesData } = useSWR(
+    idsParam ? `/api/games/byId?ids=${idsParam}` : null,
+    fetcher,
+  );
+
   if (isLoading) return <Loading />;
   if (error) return <p>Error loading games.</p>;
+
+  const favoriteGamesMap = {};
+  (favGamesData?.games || []).forEach((g) => {
+    favoriteGamesMap[g.id] = g;
+  });
 
   const gamesArray = (data?.games ?? []).map((game) => (
     <div key={game.id}>
@@ -77,6 +89,31 @@ export default function Page({ params }) {
           <h1 className="text-xs text-text-secondary">GAMES</h1>
         </div>
       </div>
+      {favoriteIds.length > 0 && (
+        <>
+          <h1 className="pt-5 pb-1 text-lg text-text-secondary">FAVORITE GAMES</h1>
+          <div className="border-b border-0.5 border-text-muted" />
+          <div className="flex flex-row pt-4 space-x-5">
+            {data.user.favoriteGames.map((id, i) => {
+              const game = favoriteGamesMap[id];
+              if (!game) return null;
+              return (
+                <GameCard
+                  key={i}
+                  src={
+                    game.cover
+                      ? "https:" + game.cover.url.replace("t_thumb", "t_720p")
+                      : "/default-cover.webp"
+                  }
+                  alt={game.name}
+                  slug={game.slug}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+
       <h1 className="pt-5 pb-1 text-lg text-text-secondary">GAMES</h1>
       <div className="border-b border-0.5 border-text-muted" />
       <div className="grid grid-cols-4 gap-2 pt-4 place-items-center max-w-5xl mx-auto">
