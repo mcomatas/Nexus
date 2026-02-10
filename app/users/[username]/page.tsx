@@ -26,23 +26,28 @@ export default function Page({ params }) {
   const { data: session, isPending } = useSession();
   const [imageUrl, setImageUrl] = useState("");
 
-  useEffect(() => {
-    if (session?.user?.image) {
-      setImageUrl(session.user.image);
-    }
-  }, [session]);
-
   const fetcher = (url) => fetch(url).then((r) => r.json());
   const { data, error, isLoading } = useSWR(
     () => `/api/users/${username}`,
     fetcher,
   );
 
+  useEffect(() => {
+    if (data?.user?.image) {
+      setImageUrl(data.user.image);
+    }
+  }, [data]);
+
   const favoriteIds = (data?.user?.favoriteGames || []).filter((id) => id > 0);
   const currentlyPlayingId = data?.user?.currentlyPlaying;
 
   // Combine favorite IDs and currently playing ID for a single fetch
-  const allIds = [...new Set([...favoriteIds, ...(currentlyPlayingId ? [currentlyPlayingId] : [])])];
+  const allIds = [
+    ...new Set([
+      ...favoriteIds,
+      ...(currentlyPlayingId ? [currentlyPlayingId] : []),
+    ]),
+  ];
   const idsParam = allIds.filter((id) => id > 0).join(",");
   const { data: gamesByIdData } = useSWR(
     idsParam ? `/api/games/byId?ids=${idsParam}` : null,
@@ -57,7 +62,9 @@ export default function Page({ params }) {
     gamesMap[g.id] = g;
   });
 
-  const currentlyPlayingGame = currentlyPlayingId ? gamesMap[currentlyPlayingId] : null;
+  const currentlyPlayingGame = currentlyPlayingId
+    ? gamesMap[currentlyPlayingId]
+    : null;
 
   const gamesArray = (data?.games ?? []).map((game) => (
     <div key={game.id}>
@@ -82,13 +89,16 @@ export default function Page({ params }) {
             alt="Profile"
             className="w-24 h-24 object-cover rounded-full overflow-hidden"
           />
-          <h1 className="px-3 text-3xl font-semibold">{session?.user?.name}</h1>
-          <Link
-            href="/settings"
-            className="bg-primary mt-1 hover:bg-primary-dark text-white text-xs w-fit rounded-md px-2 py-2 font-semibold transition-all hover:shadow-lg cursor-pointer"
-          >
-            EDIT PROFILE
-          </Link>
+          <h1 className="px-3 text-3xl font-semibold">{data?.user?.name}</h1>
+          {session?.user?.name?.toLowerCase() ===
+            data?.user?.name?.toLowerCase() && (
+            <Link
+              href="/settings"
+              className="bg-primary mt-1 hover:bg-primary-dark text-white text-xs w-fit rounded-md px-2 py-2 font-semibold transition-all hover:shadow-lg cursor-pointer"
+            >
+              EDIT PROFILE
+            </Link>
+          )}
         </div>
         <div className="text-center">
           <h1 className="font-semibold text-2xl">{gamesArray.length}</h1>
@@ -98,18 +108,24 @@ export default function Page({ params }) {
       {currentlyPlayingGame && (
         <>
           <div className="flex flex-col items-center pt-5">
-            <h1 className="pb-1 text-lg text-text-secondary">CURRENTLY PLAYING</h1>
+            <h1 className="pb-1 text-lg text-text-secondary">
+              CURRENTLY PLAYING
+            </h1>
             <div className="border-b border-0.5 border-text-muted w-60" />
             <div className="pt-4">
               <GameCard
-              src={
-                currentlyPlayingGame.cover
-                  ? "https:" + currentlyPlayingGame.cover.url.replace("t_thumb", "t_720p")
-                  : "/default-cover.webp"
-              }
-              alt={currentlyPlayingGame.name}
-              slug={currentlyPlayingGame.slug}
-            />
+                src={
+                  currentlyPlayingGame.cover
+                    ? "https:" +
+                      currentlyPlayingGame.cover.url.replace(
+                        "t_thumb",
+                        "t_720p",
+                      )
+                    : "/default-cover.webp"
+                }
+                alt={currentlyPlayingGame.name}
+                slug={currentlyPlayingGame.slug}
+              />
             </div>
           </div>
         </>
@@ -117,7 +133,9 @@ export default function Page({ params }) {
 
       {favoriteIds.length > 0 && (
         <>
-          <h1 className="pt-5 pb-1 text-lg text-text-secondary">FAVORITE GAMES</h1>
+          <h1 className="pt-5 pb-1 text-lg text-text-secondary">
+            FAVORITE GAMES
+          </h1>
           <div className="border-b border-0.5 border-text-muted" />
           <div className="flex flex-row pt-4 space-x-5">
             {data.user.favoriteGames.map((id, i) => {
