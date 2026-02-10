@@ -21,6 +21,7 @@ model User {
   emailVerified Boolean   @default(false)
   playedGames   Int[]
   favoriteGames Int[]
+  currentlyPlaying Int?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]

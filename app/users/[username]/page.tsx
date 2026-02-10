@@ -39,8 +39,12 @@ export default function Page({ params }) {
   );
 
   const favoriteIds = (data?.user?.favoriteGames || []).filter((id) => id > 0);
-  const idsParam = favoriteIds.join(",");
-  const { data: favGamesData } = useSWR(
+  const currentlyPlayingId = data?.user?.currentlyPlaying;
+
+  // Combine favorite IDs and currently playing ID for a single fetch
+  const allIds = [...new Set([...favoriteIds, ...(currentlyPlayingId ? [currentlyPlayingId] : [])])];
+  const idsParam = allIds.filter((id) => id > 0).join(",");
+  const { data: gamesByIdData } = useSWR(
     idsParam ? `/api/games/byId?ids=${idsParam}` : null,
     fetcher,
   );
@@ -48,10 +52,12 @@ export default function Page({ params }) {
   if (isLoading) return <Loading />;
   if (error) return <p>Error loading games.</p>;
 
-  const favoriteGamesMap = {};
-  (favGamesData?.games || []).forEach((g) => {
-    favoriteGamesMap[g.id] = g;
+  const gamesMap = {};
+  (gamesByIdData?.games || []).forEach((g) => {
+    gamesMap[g.id] = g;
   });
+
+  const currentlyPlayingGame = currentlyPlayingId ? gamesMap[currentlyPlayingId] : null;
 
   const gamesArray = (data?.games ?? []).map((game) => (
     <div key={game.id}>
@@ -89,13 +95,33 @@ export default function Page({ params }) {
           <h1 className="text-xs text-text-secondary">GAMES</h1>
         </div>
       </div>
+      {currentlyPlayingGame && (
+        <>
+          <div className="flex flex-col items-center pt-5">
+            <h1 className="pb-1 text-lg text-text-secondary">CURRENTLY PLAYING</h1>
+            <div className="border-b border-0.5 border-text-muted w-60" />
+            <div className="pt-4">
+              <GameCard
+              src={
+                currentlyPlayingGame.cover
+                  ? "https:" + currentlyPlayingGame.cover.url.replace("t_thumb", "t_720p")
+                  : "/default-cover.webp"
+              }
+              alt={currentlyPlayingGame.name}
+              slug={currentlyPlayingGame.slug}
+            />
+            </div>
+          </div>
+        </>
+      )}
+
       {favoriteIds.length > 0 && (
         <>
           <h1 className="pt-5 pb-1 text-lg text-text-secondary">FAVORITE GAMES</h1>
           <div className="border-b border-0.5 border-text-muted" />
           <div className="flex flex-row pt-4 space-x-5">
             {data.user.favoriteGames.map((id, i) => {
-              const game = favoriteGamesMap[id];
+              const game = gamesMap[id];
               if (!game) return null;
               return (
                 <GameCard

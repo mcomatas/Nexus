@@ -85,7 +85,9 @@ export default function AddRemoveButton({ game }) {
       >
         {played ? <IoGameController /> : <IoGameControllerOutline />}
       </button>
-      <span>{played ? "Played" : "Play"}</span>
+      <span className={played ? "text-primary" : ""}>
+        {played ? "Played" : "Play"}
+      </span>
     </div>
   );
 }

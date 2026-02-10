@@ -3,6 +3,7 @@
 import { useSession } from "../../auth-client";
 import React, { useState, useEffect } from "react";
 import AddRemoveButton from "./addRemoveButton";
+import CurrentlyPlaying from "./currentlyPlaying";
 import { GameCard } from "./gamecard";
 import useSWR from "swr";
 import { IoClose } from "react-icons/io5";
@@ -30,7 +31,10 @@ export default function ReviewForm({ game }) {
     data: reviewData,
     error: reviewError,
     isLoading: reviewLoading,
-  } = useSWR(session?.user ? `/api/users/review/${game.slug}/get` : null, fetcher);
+  } = useSWR(
+    session?.user ? `/api/users/review/${game.slug}/get` : null,
+    fetcher,
+  );
 
   useEffect(() => {
     if (reviewData) {
@@ -112,9 +116,14 @@ export default function ReviewForm({ game }) {
 
   return (
     <div className="bg-surface-elevated rounded-lg mt-15 flex flex-col space-y-5">
-      <span className="pt-5 pl-3">
-        <AddRemoveButton game={game} />
-      </span>
+      <div className="flex flex-row space-x-5">
+        <span className="pt-5 pl-3">
+          <AddRemoveButton game={game} />
+        </span>
+        <span className="pt-5 pl-3">
+          <CurrentlyPlaying game={game} />
+        </span>
+      </div>
       <span className="border-b border-primary/50" />
       <button
         onClick={openModal}
