@@ -1,12 +1,8 @@
 {
-  "name": "nexus",
+  "name": "frontend",
+  "module": "index.ts",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "backend",
-    "frontend",
-    "shared"
-  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
