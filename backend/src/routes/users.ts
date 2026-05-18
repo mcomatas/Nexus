@@ -29,11 +29,12 @@ export const userRoutes = {
   "/users/:id": {
     GET: async (req: Bun.BunRequest) => {
       try {
-        const { id } = await req.params;
+        const { id } = req.params;
         const user = await db`SELECT id, email, username, created_at FROM users WHERE id = ${id};`;
+        if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return Response.json(user);
       } catch (err: any) {
-        return Response.json({ error: err.message }, { status: 500 });
+        return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     }
   }
