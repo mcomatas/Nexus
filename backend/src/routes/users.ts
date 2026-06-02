@@ -8,7 +8,7 @@ export const userRoutes = {
     },
     POST: async(req: Bun.BunRequest) => {
       try {
-        const { email, username } = await req.json();
+        const { email, username } = await req.json() as { email?: string; username?: string };
         if (!email || !username) return Response.json({ error: "email and username required" }, { status: 400 });
         if (typeof email === "string" && !email.includes("@")) {
           return Response.json({ error: "Invalid email" }, { status: 400 });
@@ -43,7 +43,7 @@ export const userRoutes = {
     PATCH: async (req: Bun.BunRequest) => {
       try {
         const { id } = req.params;
-        const { email, username } = await req.json();
+        const { email, username } = await req.json() as { email?: string; username?: string };
         if (!email && !username) return Response.json({ error: "email or username required"}, { status: 400 });
         if (typeof email === "string" && !email.includes("@")) {
           return Response.json({ error: "Invalid email" }, { status: 400 });
