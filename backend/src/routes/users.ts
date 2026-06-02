@@ -10,6 +10,9 @@ export const userRoutes = {
       try {
         const { email, username } = await req.json();
         if (!email || !username) return Response.json({ error: "email and username required" }, { status: 400 });
+        if (typeof email === "string" && !email.includes("@")) {
+          return Response.json({ error: "Invalid email" }, { status: 400 });
+        }
 
         const [user] = await db`
           INSERT INTO users (email, username)
@@ -42,6 +45,9 @@ export const userRoutes = {
         const { id } = req.params;
         const { email, username } = await req.json();
         if (!email && !username) return Response.json({ error: "email or username required"}, { status: 400 });
+        if (typeof email === "string" && !email.includes("@")) {
+          return Response.json({ error: "Invalid email" }, { status: 400 });
+        }
 
         const [user] = await db`
           UPDATE users
