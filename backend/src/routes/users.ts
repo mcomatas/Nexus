@@ -64,6 +64,18 @@ export const userRoutes = {
         }
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
+    },
+    DELETE: async (req: Bun.BunRequest) => {
+      try {
+        const { id } = req.params;
+        const [user] = await db`
+          DELETE FROM users WHERE id = ${id} RETURNING id
+        `
+        if (!user) return Response.json({ error: "User not found" }, { status: 404 });
+        return new Response(null, { status: 204 });
+      } catch (err: any) {
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
     }
   }
 };
