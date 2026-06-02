@@ -30,10 +30,32 @@ export const userRoutes = {
     GET: async (req: Bun.BunRequest) => {
       try {
         const { id } = req.params;
-        const user = await db`SELECT id, email, username, created_at FROM users WHERE id = ${id};`;
+        const [user] = await db`SELECT id, email, username, created_at FROM users WHERE id = ${id};`;
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return Response.json(user);
       } catch (err: any) {
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    },
+    PATCH: async (req: Bun.BunRequest) => {
+      try {
+        const { id } = req.params;
+        const { email, username } = await req.json();
+        if (!email && !username) return Response.json({ error: "email or username required"}, { status: 400 });
+
+        const [user] = await db`
+          UPDATE users
+          SET email    = COALESCE(${email ?? null}, email),
+              username = COALESCE(${username ?? null}, username)
+          WHERE id = ${id}
+          RETURNING id, email, username, created_at
+        `;
+        if (!user) return Response.json({ error: "User not found" }, { status: 404 });
+        return Response.json(user);
+      } catch (err: any) {
+        if (err.code === "23505") {
+          return Response.json({ error: "User already exists" }, { status: 409 });
+        }
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     }
