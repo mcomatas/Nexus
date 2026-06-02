@@ -51,10 +51,11 @@ export const userRoutes = {
 
         const [user] = await db`
           UPDATE users
-          SET email    = COALESCE(${email ?? null}, email),
-              username = COALESCE(${username ?? null}, username)
+          SET email      = COALESCE(${email ?? null}, email),
+              username   = COALESCE(${username ?? null}, username),
+              updated_at = NOW()
           WHERE id = ${id}
-          RETURNING id, email, username, created_at
+          RETURNING id, email, username, created_at, updated_at
         `;
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return Response.json(user);
