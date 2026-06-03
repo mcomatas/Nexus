@@ -5,7 +5,9 @@ CREATE TABLE games (
     slug            TEXT,
     cover_url       TEXT,
     description     TEXT,
-    release_year    INTEGER
+    release_year    INTEGER,
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Down
