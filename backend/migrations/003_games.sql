@@ -4,6 +4,7 @@ CREATE TABLE games (
     title           TEXT NOT NULL,
     slug            TEXT,
     cover_url       TEXT,
+    artwork_url     TEXT,
     description     TEXT,
     release_year    INTEGER,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
