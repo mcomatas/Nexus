@@ -1,13 +1,24 @@
 const params = {
-  "client_id": process.env.IGDB_CLIENT_ID,
-  "client_secret": process.env.IGDB_CLIENT_SECRET,
+  "client_id": Bun.env.IGDB_CLIENT_ID,
+  "client_secret": Bun.env.IGDB_CLIENT_SECRET,
   "grant_type": "client_credentials"
+}
+
+interface IgdbGameRaw {
+  id: number;
+  name: string; // title
+  slug?: string;
+  summary?: string; // description
+  storyline?: string; // (fallback)
+  cover?: { url: string }; // single object
+  artworks?: { url: string }[]; // array - might not have any`
+  first_release_date?: number; // unix Seconds -> release year
 }
 
 let cachedToken: string | null = null;
 let expiresAt: number = 0; // Start at 0, nothing cached yet
 
-export default async function getAccessToken() {
+export async function getAccessToken() {
   // If the token exists and hasn't expired, return it
   if (cachedToken && Date.now() < expiresAt) return cachedToken;
 
@@ -15,7 +26,7 @@ export default async function getAccessToken() {
     method: "POST",
     body: JSON.stringify(params),
     headers: {
-      'content-type': 'application/json'
+      "content-type": "application/json"
     }
   });
   if (!response.ok) throw new Error(`Response status: ${response.status}`);
@@ -26,4 +37,41 @@ export default async function getAccessToken() {
   // Date.now() in ms and expires_in is in seconds. The minus 60 gives a little leg room
   expiresAt = Date.now() + ((data.expires_in - 60) * 1000);
   return cachedToken;
+}
+
+export async function fetchGameFromIGDB(igdbId: number) {
+  const accessToken = await getAccessToken();
+
+  const response = await fetch("https://api.igdb.com/v4/games", {
+    method: "POST",
+    headers: {
+      "Client-ID": Bun.env.IGDB_CLIENT_ID!,
+      "Authorization": `Bearer ${accessToken}`,
+    },
+    body: `
+      fields cover.url, slug, name, storyline, summary, artworks.url, first_release_date;
+      where id = ${igdbId};
+    `
+  });
+
+  if (!response.ok) throw new Error(`Response status: ${response.status}`);
+
+  const [game] = await response.json() as IgdbGameRaw[];
+  if (!game) return null // not on IGDB -> make it 404
+
+  return {
+    igdb_id: game.id,
+    title: game.name,
+    description: game.summary ?? game.storyline ?? null, // fallback chain
+    cover_url: game.cover
+      ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
+      : null,
+    artwork_url: game.artworks?.[0]
+      ? `https:${game.artworks[0]?.url.replace("t_thumb", "t_1080p")}`
+      : null,
+    slug: game.slug ?? null,
+    release_year: game.first_release_date
+      ? new Date(game.first_release_date * 1000).getUTCFullYear()
+      : null,
+  }
 }
