@@ -62,7 +62,7 @@ export async function fetchGameFromIGDB(igdbId: number) {
   return {
     igdb_id: game.id,
     title: game.name,
-    description: game.summary ?? game.storyline ?? null, // fallback chain
+    description: game.storyline ?? game.summary ?? null, // fallback chain
     cover_url: game.cover
       ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
       : null,
