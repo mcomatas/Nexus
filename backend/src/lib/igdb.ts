@@ -1,3 +1,5 @@
+import { db } from '../db.ts';
+
 const params = {
   "client_id": Bun.env.IGDB_CLIENT_ID,
   "client_secret": Bun.env.IGDB_CLIENT_SECRET,
@@ -18,6 +20,7 @@ interface IgdbGameRaw {
 let cachedToken: string | null = null;
 let expiresAt: number = 0; // Start at 0, nothing cached yet
 
+// Function to get the access token from IGDB
 export async function getAccessToken() {
   // If the token exists and hasn't expired, return it
   if (cachedToken && Date.now() < expiresAt) return cachedToken;
@@ -39,6 +42,7 @@ export async function getAccessToken() {
   return cachedToken;
 }
 
+// Function to fetch a game from IGDB by its ID
 export async function fetchGameFromIGDB(igdbId: number) {
   const accessToken = await getAccessToken();
 
@@ -74,4 +78,24 @@ export async function fetchGameFromIGDB(igdbId: number) {
       ? new Date(game.first_release_date * 1000).getUTCFullYear()
       : null,
   }
+}
+
+// Function to see if game is cached in local DB, if not fetch and insert it
+export async function ensureGameCached(igdbId: number) {
+  const [row] = await db`
+    SELECT igdb_id, title, description, cover_url, artwork_url, slug, release_year
+    FROM games WHERE igdb_id = ${igdbId}
+  `
+  if (row) return row;
+
+  const game = await fetchGameFromIGDB(igdbId);
+  if (!game) return null;
+
+  await db`
+    INSERT INTO games (igdb_id, title, description, cover_url, artwork_url, slug, release_year)
+    VALUES (${game.igdb_id}, ${game.title}, ${game.description}, ${game.cover_url}, ${game.artwork_url}, ${game.slug}, ${game.release_year})
+    ON CONFLICT (igdb_id) DO NOTHING
+  `;
+
+  return game;
 }
