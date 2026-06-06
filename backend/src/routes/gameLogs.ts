@@ -1,0 +1,47 @@
+import { db } from '../db.ts';
+import { ensureGameCached } from '../lib/igdb.ts';
+import { getUserId } from '../lib/auth.ts';
+
+export const gameLogRoutes = {
+  "/game-logs": {
+    POST: async (req: Bun.BunRequest) => {
+      try {
+        // Will need to update later when session is included. User ID fine for now.
+        const user_id = await getUserId(req);
+        if (!user_id) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+        const {
+          igdb_id,
+          rating,
+          review_text
+        } = await req.json() as {
+            igdb_id?: number,
+            rating?: number,
+            review_text?: string
+          };
+
+        if (typeof igdb_id !== "number" || !Number.isInteger(igdb_id)) return Response.json({ error: "igdb_id (integer) required" }, { status: 400 });
+        if (rating != null && (typeof rating !== "number" || rating < 1 || rating > 10)) {
+          return Response.json({ error: "Rating must be 1-10" }, { status: 400 });
+        }
+
+        const game = await ensureGameCached(igdb_id);
+        if (!game) return Response.json({ error: "Game not found on IGDB" }, { status: 404 });
+
+        const [log] = await db`
+          INSERT INTO game_logs (user_id, igdb_id, rating, review_text)
+          VALUES (${user_id}, ${igdb_id}, ${rating || null}, ${review_text})
+          ON CONFLICT (user_id, igdb_id)
+          DO UPDATE SET rating = EXCLUDED.rating, review_text = EXCLUDED.review_text, updated_at = NOW()
+          RETURNING id, user_id, igdb_id, rating, review_text, created_at, updated_at
+        `
+
+        return Response.json(log, { status: 201 });
+
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
 CREATE TABLE games (
     igdb_id         INTEGER PRIMARY KEY,
     title           TEXT NOT NULL,
-    slug            TEXT,
+    slug            TEXT NOT NULL UNIQUE,
     cover_url       TEXT,
     artwork_url     TEXT,
     description     TEXT,
