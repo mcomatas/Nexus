@@ -4,7 +4,7 @@ import { getUserId } from '../lib/auth.ts';
 
 export const gameLogRoutes = {
   "/game-logs": {
-    // User centric look up. Game reviews in /games/:igdbId/reviews
+    // User centric look up. Game reviews in /games/:id/reviews
     GET: async (req: Bun.BunRequest) => {
       try {
         const url = new URL(req.url);
