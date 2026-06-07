@@ -68,6 +68,28 @@ export const gameLogRoutes = {
         console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
+    },
+    DELETE: async (req: Bun.BunRequest) => {
+      try {
+        // Will need toupdate getUserId
+        const user_id = await getUserId(req);
+        if (!user_id) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+        const { igdb_id } = await req.json() as { igdb_id?: number };
+        if (typeof igdb_id !== "number" || !Number.isInteger(igdb_id)) return Response.json({ error: "igdb_id (integer) required" }, { status: 400 });
+
+        const [row] = await db`
+          DELETE FROM game_logs
+          WHERE user_id = ${user_id} AND igdb_id = ${igdb_id}
+          RETURNING id;
+        `;
+
+        if (!row) return Response.json({ error: "Log not found" }, { status: 404 });
+        return new Response(null, { status: 204 });
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
     }
   }
 }
