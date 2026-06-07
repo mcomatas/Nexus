@@ -33,7 +33,7 @@ export const gameRoutes = {
     GET: async (req: Bun.BunRequest) => {
       try {
         const id = Number(req.params.id);
-        if (!Number.isInteger(id)) return Response.json({ error: "Invalid id" }, { status: 400 });
+        if (!Number.isInteger(id) || id < 1) return Response.json({ error: "Invalid id" }, { status: 400 });
 
         const [game] = await db`SELECT igdb_id, title, slug, cover_url, artwork_url, description, release_year FROM games WHERE igdb_id = ${Number(id)};`;
 
@@ -48,7 +48,7 @@ export const gameRoutes = {
     PATCH: async (req: Bun.BunRequest) => {
       try {
         const id = Number(req.params.id);
-        if (!Number.isInteger(id)) return Response.json({ error: "Invalid id" }, { status: 400 });
+        if (!Number.isInteger(id) || id < 1) return Response.json({ error: "Invalid id" }, { status: 400 });
 
         const game = await fetchGameFromIGDB(id);
         if (!game) return Response.json({ error: "Game not found on IGDB" }, { status: 404 });
@@ -78,7 +78,7 @@ export const gameRoutes = {
     DELETE: async (req: Bun.BunRequest) => {
       try {
         const id = Number(req.params.id);
-        if (!Number.isInteger(id)) return Response.json({ error: "Invalid id" }, { status: 400 });
+        if (!Number.isInteger(id) || id < 1) return Response.json({ error: "Invalid id" }, { status: 400 });
 
         const [game] = await db`
           DELETE FROM games where igdb_id = ${id} RETURNING igdb_id
@@ -88,6 +88,41 @@ export const gameRoutes = {
 
       } catch (err: any) {
         if (err.code === "23503") return Response.json({ error: "Game has logs, can't delete" }, { status: 409 });
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    }
+  },
+  "/games/:id/reviews": {
+    GET: async (req: Bun.BunRequest) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id < 1) return Response.json({ error: "Invalid id" }, { status: 400 });
+
+        const url = new URL(req.url);
+        const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 100);
+        const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
+
+        const reviews = await db`
+          SELECT * FROM game_logs
+          WHERE igdb_id = ${id}
+          ORDER BY created_at DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `;
+        const [stats] = await db`
+          SELECT
+            AVG(rating)::numeric(4,2) AS avg_rating,
+            COUNT(rating)             AS rating_count,
+            COUNT(*)                  AS total_reviews
+          FROM game_logs WHERE igdb_id = ${id}
+        `;
+
+        return Response.json({
+          stats,
+          reviews,
+          pagination: { limit, offset, total: Number(stats.total_reviews) }
+        }, { status: 200 });
+      } catch (err: any) {
         console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }

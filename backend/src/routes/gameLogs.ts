@@ -4,13 +4,14 @@ import { getUserId } from '../lib/auth.ts';
 
 export const gameLogRoutes = {
   "/game-logs": {
+    // User centric look up. Game reviews in /games/:igdbId/reviews
     GET: async (req: Bun.BunRequest) => {
       try {
         const url = new URL(req.url);
         const igdbIdRaw = url.searchParams.get("igdb_id"); // string | null
         const userId = url.searchParams.get("user_id"); // string | null
 
-        if (!userId && !igdbIdRaw) return Response.json({ error: "igdb_id or user_id required" }, { status: 400 });
+        if (!userId) return Response.json({ error: "user_id required" }, { status: 400 });
 
         let igdbId: number | null = null;
         if (igdbIdRaw !== null) {
@@ -20,15 +21,9 @@ export const gameLogRoutes = {
           }
         }
 
-        let logs = [];
-        if (userId && igdbId !== null) {
-          logs = await db`SELECT * FROM game_logs WHERE user_id = ${userId} AND igdb_id = ${igdbId}`;
-        } else if (userId) {
-          logs = await db`SELECT * FROM game_logs WHERE user_id = ${userId}`;
-        } else if (igdbId) {
-          logs = await db`SELECT * FROM game_logs WHERE igdb_id = ${igdbId}`;
-        }
-        // TODO: game-page needs avg/count stats + pagination — likely split to its own endpoint
+        const logs = igdbId !== null
+          ? await db`SELECT * FROM game_logs WHERE user_id = ${userId} AND igdb_id = ${igdbId}`
+          : await db`SELECT * FROM game_logs WHERE user_id = ${userId}`;
         return Response.json(logs, { status: 200 })
       } catch (err: any) {
         console.error(err);
