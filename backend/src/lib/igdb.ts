@@ -42,6 +42,55 @@ export async function getAccessToken() {
   return cachedToken;
 }
 
+// Function to search games on IGDB
+export async function searchGamesFromIGDB(query: string | null, limit: number, offset: number) {
+  const accessToken = await getAccessToken();
+
+  // Protect against IGDB/Apicalypse injection. Replace " and \
+  if (query) query = query.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+  const body = `
+    ${query ? `search "${query}";` : ""}
+    fields name, slug, cover.url;
+    where cover != null & game_type = (0,8) & version_parent = null;
+    limit ${limit};
+    offset ${offset};
+    ${query ? "" : "sort total_rating_count desc;"}
+  `
+
+  const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Client-ID": Bun.env.IGDB_CLIENT_ID!,
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: body,
+  });
+
+  const gamesRaw = await gamesResponse.json() as {
+    id: number;
+    name: string;
+    slug: string;
+    cover: {
+      url: string;
+    } | null;
+  }[];
+
+  const games = gamesRaw.map((game) => {
+    return {
+      igdb_id: game.id,
+      title: game.name,
+      slug: game.slug ?? null,
+      cover_url: game.cover
+        ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
+        : null,
+    }
+  });
+
+  return games;
+}
+
 // Function to fetch a game from IGDB by its ID
 export async function fetchGameFromIGDB(igdbId: number) {
   const accessToken = await getAccessToken();

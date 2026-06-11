@@ -1,5 +1,7 @@
 import { db } from '../db.ts'
-import { fetchGameFromIGDB, ensureGameCached } from '../lib/igdb.ts'
+import { searchGamesFromIGDB, fetchGameFromIGDB, ensureGameCached } from '../lib/igdb.ts'
+
+const PAGE_SIZE = 32;
 
 export const gameRoutes = {
   "/games": {
@@ -26,6 +28,25 @@ export const gameRoutes = {
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
 
+    }
+  },
+  // This endpoint is for searching on IGDB, not local DB
+  "/games/search": {
+    GET: async (req: Bun.BunRequest) => {
+      try {
+        const url = new URL(req.url);
+        const query = url.searchParams.get("query") || null;
+        const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || PAGE_SIZE, 1), 500);
+        const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
+
+        const games = await searchGamesFromIGDB(query, limit, offset);
+
+        return Response.json(games, { status: 200 });
+
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
     }
   },
   "/games/:id": {
