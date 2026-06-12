@@ -1,6 +1,5 @@
 import { db } from '../db.ts';
-// Session helpers to live in lib/auth.ts (e.g. createSession), alongside getUserId
-// import { createSession } from '../lib/auth.ts';
+import { createSession } from "../lib/auth.ts";
 
 export const authRoutes = {
   "/auth/register": {
@@ -35,7 +34,14 @@ export const authRoutes = {
           return user;
         });
 
-        return Response.json(user, { status: 201 });
+        const session = await createSession(user.id);
+        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+        const cookie = `session=${session.id}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`
+
+        return Response.json(user, {
+          status: 201,
+          headers: { "Set-Cookie": cookie }
+        });
       } catch (err: any) {
         if (err.code === "23505") {
           return Response.json({ error: "User already exists" }, { status: 409 });
