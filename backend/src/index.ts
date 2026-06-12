@@ -2,6 +2,7 @@ import { db } from "./db";
 import { userRoutes } from "./routes/users";
 import { gameRoutes } from "./routes/games";
 import { gameLogRoutes } from "./routes/gameLogs";
+import { authRoutes } from "./routes/auth";
 
 const server = Bun.serve({
   port: 3000,
@@ -10,6 +11,7 @@ const server = Bun.serve({
     ...userRoutes,
     ...gameRoutes,
     ...gameLogRoutes,
+    ...authRoutes
   }
 });
 

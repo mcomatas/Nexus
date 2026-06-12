@@ -6,7 +6,8 @@ export const userRoutes = {
       const users = await db`SELECT id, email, username, created_at FROM users;`;
       return Response.json(users);
     },
-    POST: async(req: Bun.BunRequest) => {
+    /* Retired endpoint with addition of /routes/auth.ts
+    POST: async (req: Bun.BunRequest) => {
       try {
         const { email, username } = await req.json() as { email?: string; username?: string };
         if (!email || !username) return Response.json({ error: "email and username required" }, { status: 400 });
@@ -28,6 +29,7 @@ export const userRoutes = {
         return Response.json({ error: "Bad request" }, { status: 400 });
       }
     }
+    */
   },
   "/users/:id": {
     GET: async (req: Bun.BunRequest) => {
