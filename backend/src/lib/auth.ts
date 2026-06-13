@@ -1,9 +1,17 @@
 import { db } from "../db.ts";
 
-//TEMP: until real session exists, id comes from x-user-id header.
-// When auth is done, swap this function body
 export async function getUserId(req: Bun.BunRequest): Promise<string | null> {
-  return req.headers.get("x-user-id")
+  const cookies = req.cookies;
+  const sessionCookie = cookies.get("session");
+  if (!sessionCookie) return null;
+
+  const [session] = await db`
+    SELECT user_id FROM sessions
+    WHERE id = ${sessionCookie} AND expires_at > NOW()
+  `;
+  if (!session) return null;
+
+  return session.user_id;
 }
 
 export async function createSession(userId: string) {
