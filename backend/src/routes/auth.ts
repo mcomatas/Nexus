@@ -50,10 +50,6 @@ export const authRoutes = {
   "/auth/login": {
     POST: async (req: Bun.BunRequest) => {
       try {
-        // TODO: parse { email, password }; look up user + their 'password' account;
-        // Bun.password.verify() against password_hash;
-        // on success create a session + set the session cookie; return user (no hash).
-
         const invalid = () => Response.json({ error: "Invalid email or password" }, { status: 401 });
 
         const { email, password } = await req.json() as { email?: string, password?: string }
@@ -96,9 +92,16 @@ export const authRoutes = {
   "/auth/logout": {
     POST: async (req: Bun.BunRequest) => {
       try {
-        // TODO: read session token from the cookie; delete that session row;
-        // clear the cookie; return 204.
-        return new Response("Not implemented", { status: 501 });
+        const cookies = req.cookies;
+        const sessionCookie = cookies.get("session");
+
+        if (sessionCookie) {
+          await db`DELETE FROM sessions WHERE id = ${sessionCookie}`
+        }
+        const clearCookie = `session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure`;
+
+        return new Response(null, { status: 204, headers: { "Set-Cookie": clearCookie } });
+
       } catch (err: any) {
         console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
