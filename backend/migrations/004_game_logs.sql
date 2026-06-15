@@ -8,7 +8,7 @@ CREATE TABLE game_logs (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_game FOREIGN KEY (igdb_id) REFERENCES games(igdb_id),
     CONSTRAINT unique_user_game UNIQUE (user_id, igdb_id)
 );

@@ -1,11 +1,13 @@
 import { db } from '../db.ts'
+import { getUserId } from '../lib/auth.ts'
 
 export const userRoutes = {
-  "/users": {
+  // This endpoint gets all users, probably don't want people getting users
+  /*"/users": {
     GET: async () => {
       const users = await db`SELECT id, email, username, created_at FROM users;`;
       return Response.json(users);
-    },
+    },*/
     /* Retired endpoint with addition of /routes/auth.ts
     POST: async (req: Bun.BunRequest) => {
       try {
@@ -29,8 +31,7 @@ export const userRoutes = {
         return Response.json({ error: "Bad request" }, { status: 400 });
       }
     }
-    */
-  },
+  },*/
   "/users/:id": {
     GET: async (req: Bun.BunRequest) => {
       try {
@@ -45,6 +46,10 @@ export const userRoutes = {
     PATCH: async (req: Bun.BunRequest) => {
       try {
         const { id } = req.params;
+        const userId = await getUserId(req);
+        if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        if (id !== userId) return Response.json({ error: "Forbidden" }, { status: 403 });
+
         const { email, username } = await req.json() as { email?: string; username?: string };
         if (!email && !username) return Response.json({ error: "email or username required"}, { status: 400 });
         if (typeof email === "string" && !email.includes("@")) {
@@ -65,18 +70,24 @@ export const userRoutes = {
         if (err.code === "23505") {
           return Response.json({ error: "User already exists" }, { status: 409 });
         }
+        console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     },
     DELETE: async (req: Bun.BunRequest) => {
       try {
         const { id } = req.params;
+        const userId = await getUserId(req);
+        if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        if (id !== userId) return Response.json({ error: "Forbidden" }, { status: 403 });
+
         const [user] = await db`
           DELETE FROM users WHERE id = ${id} RETURNING id
         `
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return new Response(null, { status: 204 });
       } catch (err: any) {
+        console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     }
