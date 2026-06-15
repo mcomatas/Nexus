@@ -1,5 +1,6 @@
 import { db } from '../db.ts';
 import { createSession } from "../lib/auth.ts";
+import { isUniqueViolation } from "../lib/db-errors.ts";
 
 export const authRoutes = {
   "/auth/register": {
@@ -38,7 +39,7 @@ export const authRoutes = {
           headers: { "Set-Cookie": cookie }
         });
       } catch (err: any) {
-        if (err.code === "23505") {
+        if (isUniqueViolation(err)) {
           return Response.json({ error: "User already exists" }, { status: 409 });
         }
         console.error(err);

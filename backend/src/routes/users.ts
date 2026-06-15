@@ -1,5 +1,6 @@
 import { db } from '../db.ts'
 import { getUserId } from '../lib/auth.ts'
+import { isUniqueViolation } from '../lib/db-errors.ts'
 
 export const userRoutes = {
   // This endpoint gets all users, probably don't want people getting users
@@ -67,7 +68,7 @@ export const userRoutes = {
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return Response.json(user);
       } catch (err: any) {
-        if (err.code === "23505") {
+        if (isUniqueViolation(err)) {
           return Response.json({ error: "User already exists" }, { status: 409 });
         }
         console.error(err);
