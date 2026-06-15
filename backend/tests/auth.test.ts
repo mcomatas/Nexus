@@ -120,18 +120,74 @@ test("Duplicate username", async () => {
 
 
 // LOGIN TESTS
-test("", async () => {
+test("Correct login credentials", async () => {
+  const res1 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
+  });
+
+  expect(res1.status).toBe(201);
+
+  const res2 = await fetch(url("auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", password: "password123" }),
+  });
+
+  expect(res2.status).toBe(200);
+  expect(res2.headers.get("set-cookie")).toContain("session=");
 
 });
 
-test("", async () => {
+test("Wrong password", async () => {
+  const res1 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
+  });
+
+  expect(res1.status).toBe(201);
+
+  const res2 = await fetch(url("auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", password: "wrongpassword" }),
+  });
+
+  expect(res2.status).toBe(401);
+  expect(await res2.json()).toEqual({ error: "Invalid email or password" });
 
 });
 
-test("", async () => {
+test("Nonexistent email", async () => {
+  const res = await fetch(url("auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "thisemail@doesntexist.com", password: "password123" }),
+  });
+
+  expect(res.status).toBe(401);
+  expect(await res.json()).toEqual({ error: "Invalid email or password" });
 
 });
 
-test("", async () => {
+test("Missing fields", async () => {
+  const res = await fetch(url("auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: "password123" }),
+  });
 
+  expect(res.status).toBe(400);
+  expect(await res.json()).toEqual({ error: "Missing email or password" });
+
+  const res2 = await fetch(url("auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com" }),
+  });
+
+  expect(res2.status).toBe(400);
+  expect(await res2.json()).toEqual({ error: "Missing email or password" });
 });
