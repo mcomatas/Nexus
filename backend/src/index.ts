@@ -6,8 +6,6 @@ import { authRoutes } from "./routes/auth";
 
 export const routes = { ...userRoutes, ...gameRoutes, ...gameLogRoutes, ...authRoutes };
 
-console.log("index.ts ran");
-
 if (import.meta.main) {
   const server = Bun.serve({
     port: 3000,
