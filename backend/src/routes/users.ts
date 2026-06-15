@@ -36,7 +36,7 @@ export const userRoutes = {
     GET: async (req: Bun.BunRequest) => {
       try {
         const { id } = req.params;
-        const [user] = await db`SELECT id, email, username, created_at FROM users WHERE id = ${id};`;
+        const [user] = await db`SELECT id, username, created_at FROM users WHERE id = ${id};`;
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
         return Response.json(user);
       } catch (err: any) {

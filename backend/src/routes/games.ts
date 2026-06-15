@@ -66,7 +66,7 @@ export const gameRoutes = {
       }
     },
     // Re-sync a game's cached data from IGDB
-    PATCH: async (req: Bun.BunRequest) => {
+    /*PATCH: async (req: Bun.BunRequest) => {
       try {
         const id = Number(req.params.id);
         if (!Number.isInteger(id) || id < 1) return Response.json({ error: "Invalid id" }, { status: 400 });
@@ -112,7 +112,7 @@ export const gameRoutes = {
         console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
-    }
+      }*/
   },
   "/games/:id/reviews": {
     GET: async (req: Bun.BunRequest) => {
