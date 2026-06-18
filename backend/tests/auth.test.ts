@@ -1,5 +1,5 @@
 import { test, expect, beforeAll, afterAll, beforeEach } from "bun:test";
-import { startTestServer, resetDb } from "./helpers";
+import { startTestServer, resetDb, registerUser } from "./helpers";
 import { db } from "../src/db";
 
 let server: ReturnType<typeof startTestServer>;
@@ -122,13 +122,7 @@ test("Duplicate username", async () => {
 
 // LOGIN TESTS
 test("Correct login credentials", async () => {
-  const res1 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
-  });
-
-  expect(res1.status).toBe(201);
+  await registerUser(server.url, "m@test.com", "mike");
 
   const res2 = await fetch(url("auth/login"), {
     method: "POST",
@@ -142,13 +136,7 @@ test("Correct login credentials", async () => {
 });
 
 test("Wrong password", async () => {
-  const res1 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
-  });
-
-  expect(res1.status).toBe(201);
+  await registerUser(server.url, "m@test.com", "mike");
 
   const res2 = await fetch(url("auth/login"), {
     method: "POST",
@@ -195,17 +183,7 @@ test("Missing fields", async () => {
 
 // LOGOUT TESTS
 test("Logout with cookie", async () => {
-  const res1 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
-  });
-  expect(res1.status).toBe(201);
-
-  const cookieHeader = res1.headers.get("set-cookie");
-  const session = cookieHeader?.split(";")[0]?.split("=")[1];
-
-  const cookie = `session=${session};`
+  const { cookie } = await registerUser(server.url, "m@test.com", "mike");
 
   const res2 = await fetch(url("auth/logout"), {
     method: "POST",
@@ -219,16 +197,7 @@ test("Logout with cookie", async () => {
 });
 
 test("Session expires on logout", async () => {
-  const res1 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
-  });
-  expect(res1.status).toBe(201);
-
-  const cookieHeader = res1.headers.get("set-cookie");
-  const session = cookieHeader?.split(";")[0]?.split("=")[1];
-  const cookie = `session=${session};`
+  const { cookie } = await registerUser(server.url, "m@test.com", "mike");
 
   const res2 = await fetch(url("auth/logout"), {
     method: "POST",
@@ -293,28 +262,8 @@ test("Expired session", async () => {
 
 test("Ownership", async () => {
   // This test verifies that a user can only modify / delete their own data
-  const res1 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
-  });
-  expect(res1.status).toBe(201);
-
-  const cookieHeader = res1.headers.get("set-cookie");
-  const session = cookieHeader?.split(";")[0]?.split("=")[1];
-  const user1Cookie = `session=${session};`
-  const res1Body = await res1.json() as { id?: string, email?: string, username?: string};
-  const user1Id = res1Body.id;
-
-  const res2 = await fetch(url("auth/register"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "w@test.com", username: "will", password: "password123" }),
-  });
-  expect(res2.status).toBe(201);
-
-  const res2Body = await res2.json() as { id?: string, email?: string, username?: string};
-  const user2Id = res2Body.id;
+  const { cookie: user1Cookie, id: user1Id } = await registerUser(server.url, "m@test.com", "mike");
+  const { id: user2Id } = await registerUser(server.url, "w@test.com", "will");
 
   // positive case: a user CAN edit their own account
   const ownEdit = await fetch(url(`users/${user1Id}`), {
