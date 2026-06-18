@@ -1,5 +1,6 @@
 import { test, expect, beforeAll, afterAll, beforeEach } from "bun:test";
 import { startTestServer, resetDb } from "./helpers";
+import { db } from "../src/db";
 
 let server: ReturnType<typeof startTestServer>;
 beforeAll(() => { server = startTestServer(); });
@@ -249,4 +250,110 @@ test("Logout with no cookie", async () => {
     method: "POST",
   });
   expect(res.status).toBe(204);
+});
+
+// OTHER TESTS
+test("Garbage cookie", async () => {
+  const cookie = "session=garbage";
+  const res = await fetch(url("game-logs"), {
+    method: "POST",
+    headers: { "Cookie": cookie },
+    body: JSON.stringify({  }),
+  });
+  expect(res.status).toBe(401);
+  expect(await res.json()).toEqual({ error: "Unauthorized" });
+});
+
+test("Expired session", async () => {
+  // put in a user
+  const [user] = await db`
+    INSERT INTO users (email, username)
+    VALUES ('expired@test.com', 'expireduser')
+    RETURNING id
+  `;
+
+  // make a session that's already expired and put it in the DB
+  const token = "expired-token";
+  const past = new Date(Date.now() - 1000); // 1 second ago
+  await db`
+    INSERT INTO sessions (id, user_id, expires_at)
+    VALUES (${token}, ${user.id}, ${past})
+  `;
+
+  // try expired session on protected route
+  const res = await fetch(url("game-logs"), {
+    method: "POST",
+    headers: { "Cookie": `session=${token}` },
+    body: JSON.stringify({}),
+  });
+
+  expect(res.status).toBe(401);
+  expect(await res.json()).toEqual({ error: "Unauthorized" });
+});
+
+test("Ownership", async () => {
+  // This test verifies that a user can only modify / delete their own data
+  const res1 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
+  });
+  expect(res1.status).toBe(201);
+
+  const cookieHeader = res1.headers.get("set-cookie");
+  const session = cookieHeader?.split(";")[0]?.split("=")[1];
+  const user1Cookie = `session=${session};`
+  const res1Body = await res1.json() as { id?: string, email?: string, username?: string};
+  const user1Id = res1Body.id;
+
+  const res2 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "w@test.com", username: "will", password: "password123" }),
+  });
+  expect(res2.status).toBe(201);
+
+  const res2Body = await res2.json() as { id?: string, email?: string, username?: string};
+  const user2Id = res2Body.id;
+
+  // positive case: a user CAN edit their own account
+  const ownEdit = await fetch(url(`users/${user1Id}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "Cookie": user1Cookie },
+    body: JSON.stringify({ username: "mike2" }),
+  });
+  expect(ownEdit.status).toBe(200);
+  expect((await ownEdit.json() as { username?: string }).username).toBe("mike2");
+
+  // negatigve cases
+  const patchResponse = await fetch(url(`users/${user2Id}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "Cookie": user1Cookie },
+    body: JSON.stringify({  }),
+  })
+  expect(patchResponse.status).toBe(403);
+  expect(await patchResponse.json()).toEqual({ error: "Forbidden" });
+
+  const deleteResponse = await fetch(url(`users/${user2Id}`), {
+    method: "DELETE",
+    headers: { "Cookie": user1Cookie },
+  })
+  expect(deleteResponse.status).toBe(403);
+  expect(await deleteResponse.json()).toEqual({ error: "Forbidden" });
+
+  const noCookieResponse = await fetch(url(`users/${user2Id}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({  }),
+  })
+  expect(noCookieResponse.status).toBe(401);
+  expect(await noCookieResponse.json()).toEqual({ error: "Unauthorized" });
+
+  // positive case: a user can delete their own account
+  const successfulDelete = await fetch(url(`users/${user1Id}`), {
+    method: "DELETE",
+    headers: { "Cookie": user1Cookie },
+  })
+  expect(successfulDelete.status).toBe(204);
+
 });

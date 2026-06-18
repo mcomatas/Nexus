@@ -32,7 +32,6 @@ export const gameLogRoutes = {
     },
     POST: async (req: Bun.BunRequest) => {
       try {
-        // Will need to update later when session is included. User ID fine for now.
         const user_id = await getUserId(req);
         if (!user_id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
