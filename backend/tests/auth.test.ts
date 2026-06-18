@@ -191,3 +191,62 @@ test("Missing fields", async () => {
   expect(res2.status).toBe(400);
   expect(await res2.json()).toEqual({ error: "Missing email or password" });
 });
+
+// LOGOUT TESTS
+test("Logout with cookie", async () => {
+  const res1 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
+  });
+  expect(res1.status).toBe(201);
+
+  const cookieHeader = res1.headers.get("set-cookie");
+  const session = cookieHeader?.split(";")[0]?.split("=")[1];
+
+  const cookie = `session=${session};`
+
+  const res2 = await fetch(url("auth/logout"), {
+    method: "POST",
+    headers: { "Cookie": cookie },
+  });
+
+  expect(res2.status).toBe(204);
+  expect(res2.headers.get("Set-Cookie")).toContain("session=;");
+  expect(res2.headers.get("Set-Cookie")).toContain("Max-Age=0;");
+
+});
+
+test("Session expires on logout", async () => {
+  const res1 = await fetch(url("auth/register"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "m@test.com", username: "mike", password: "password123" }),
+  });
+  expect(res1.status).toBe(201);
+
+  const cookieHeader = res1.headers.get("set-cookie");
+  const session = cookieHeader?.split(";")[0]?.split("=")[1];
+  const cookie = `session=${session};`
+
+  const res2 = await fetch(url("auth/logout"), {
+    method: "POST",
+    headers: { "Cookie": cookie },
+  });
+  expect(res2.status).toBe(204);
+
+  const res3 = await fetch(url("game-logs"), {
+    method: "POST",
+    headers: { "Cookie": cookie },
+    body: JSON.stringify({  }),
+  });
+  expect(res3.status).toBe(401);
+  expect(await res3.json()).toEqual({ error: "Unauthorized" });
+});
+
+test("Logout with no cookie", async () => {
+  const res = await fetch(url("auth/logout"), {
+    method: "POST",
+  });
+  expect(res.status).toBe(204);
+});
