@@ -6,12 +6,13 @@ const searchSpy = mock(async (_query: string | null, _limit: number, _offset: nu
   return [{ igdb_id: 1, title: "Zelda", slug: "zelda", cover_url: "https://img/co.jpg" }];
 });
 
-// Replace the whole igdb module. Must provide every export the routes import,
-// or those imports become undefined and unrelated route files break on load.
+// Partial mock: keep the REAL igdb exports and override ONLY the live IGDB call.
+// Bun module mocks aren't isolated per file, so stubbing ensureGameCached/fetchGameFromIGDB
+// here would leak into other test files (e.g. games/gameLogs) that rely on the real ones.
+import * as igdb from "../src/lib/igdb.ts";
 mock.module("../src/lib/igdb.ts", () => ({
+  ...igdb,
   searchGamesFromIGDB: searchSpy,
-  fetchGameFromIGDB: async () => null,
-  ensureGameCached: async () => null,
 }));
 
 import { startTestServer, resetDb } from "./helpers";

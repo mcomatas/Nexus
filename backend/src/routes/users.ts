@@ -39,7 +39,7 @@ export const userRoutes = {
         const { id } = req.params;
         const [user] = await db`SELECT id, username, created_at FROM users WHERE id = ${id};`;
         if (!user) return Response.json({ error: "User not found" }, { status: 404 });
-        return Response.json(user);
+        return Response.json(user, { status: 200 });
       } catch (err: any) {
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }

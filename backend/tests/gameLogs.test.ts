@@ -105,3 +105,13 @@ test("GET /game-logs?user_id returns that user's logs", async () => {
   expect(res.status).toBe(200);
   expect((await res.json() as unknown[]).length).toBe(2);
 });
+
+test("GET /game-logs without user-id returns 400", async () => {
+  const res = await fetch(url("game-logs"));
+  expect(res.status).toBe(400);
+  expect(await res.json()).toEqual({ error: "user_id required" });
+
+  const res2 = await fetch(url("game-logs?igdb_id=1942"));
+  expect(res2.status).toBe(400);
+  expect(await res2.json()).toEqual({ error: "user_id required" });
+})
