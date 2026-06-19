@@ -38,3 +38,22 @@ export async function registerUser(base: string | URL, email: string, username: 
   const body = await res.json() as { id: string };
   return { cookie, id: body.id };
 }
+
+// Seed one game_logs row for a game. Creates a throwaway user per log because
+// game_logs has UNIQUE(user_id, igdb_id) — one log per user per game, so multiple
+// logs on the same game need distinct users. The game must already exist (seedGame first).
+// Pass rating = null to seed a text-only review (no rating).
+export async function seedLog(igdbId: number, rating: number | null) {
+  const suffix = crypto.randomUUID().slice(0, 8);
+  const [user] = await db`
+    INSERT INTO users (email, username)
+    VALUES (${`u-${suffix}@test.com`}, ${`u-${suffix}`})
+    RETURNING id
+  `;
+  const [log] = await db`
+    INSERT INTO game_logs (user_id, igdb_id, rating, review_text)
+    VALUES (${user.id}, ${igdbId}, ${rating}, ${rating === null ? "text only" : "review"})
+    RETURNING id, rating
+  `;
+  return log;
+}
