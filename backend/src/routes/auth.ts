@@ -1,5 +1,5 @@
 import { db } from '../db.ts';
-import { createSession } from "../lib/auth.ts";
+import { createSession, buildSessionCookie, buildClearCookie } from "../lib/auth.ts";
 import { isUniqueViolation } from "../lib/db-errors.ts";
 
 export const authRoutes = {
@@ -31,12 +31,10 @@ export const authRoutes = {
         });
 
         const session = await createSession(user.id);
-        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
-        const cookie = `session=${session.id}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`
 
         return Response.json(user, {
           status: 201,
-          headers: { "Set-Cookie": cookie }
+          headers: { "Set-Cookie": buildSessionCookie(session.id) }
         });
       } catch (err: any) {
         if (isUniqueViolation(err)) {
@@ -76,12 +74,10 @@ export const authRoutes = {
         if (!verified) return invalid();
 
         const session = await createSession(user.id);
-        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
-        const cookie = `session=${session.id}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`
 
         return Response.json(user, {
           status: 200,
-          headers: { "Set-Cookie": cookie }
+          headers: { "Set-Cookie": buildSessionCookie(session.id) }
         });
       } catch (err: any) {
         console.error(err);
@@ -99,9 +95,7 @@ export const authRoutes = {
         if (sessionCookie) {
           await db`DELETE FROM sessions WHERE id = ${sessionCookie}`
         }
-        const clearCookie = `session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure`;
-
-        return new Response(null, { status: 204, headers: { "Set-Cookie": clearCookie } });
+        return new Response(null, { status: 204, headers: { "Set-Cookie": buildClearCookie() } });
 
       } catch (err: any) {
         console.error(err);
