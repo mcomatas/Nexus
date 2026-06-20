@@ -306,3 +306,31 @@ test("Ownership", async () => {
   expect(successfulDelete.status).toBe(204);
 
 });
+
+// auth/me TESTS
+test("GET /auth/me after successful login / register", async () => {
+  const { cookie, id: userId } = await registerUser(server.url, "m@test.com", "mike");
+  const response = await fetch(url(`auth/me`), {
+    method: "GET",
+    headers: { "Cookie": cookie },
+  })
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ id: userId, email: "m@test.com", username: "mike" });
+});
+
+test("GET /auth/me with no cookie", async () => {
+  const response = await fetch(url("auth/me"), {
+    method: "GET",
+  });
+  expect(response.status).toBe(401);
+  expect(await response.json()).toEqual({ error: "Unauthorized" });
+});
+
+test("GET /auth/me with garbage cookie", async () => {
+  const response = await fetch(url("auth/me"), {
+    method: "GET",
+    headers: { "Cookie": "session=garbage" },
+  });
+  expect(response.status).toBe(401);
+  expect(await response.json()).toEqual({ error: "Unauthorized" });
+})

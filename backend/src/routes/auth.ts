@@ -1,5 +1,5 @@
 import { db } from '../db.ts';
-import { createSession, buildSessionCookie, buildClearCookie } from "../lib/auth.ts";
+import { createSession, buildSessionCookie, buildClearCookie, getUserId } from "../lib/auth.ts";
 import { isUniqueViolation } from "../lib/db-errors.ts";
 
 export const authRoutes = {
@@ -103,4 +103,23 @@ export const authRoutes = {
       }
     },
   },
+
+  "/auth/me": {
+    GET: async (req: Bun.BunRequest) => {
+      try {
+        const userId = await getUserId(req);
+        if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+        const [user] = await db`
+          SELECT id, email, username FROM users WHERE id = ${userId}
+        `
+        if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+        return Response.json(user, { status: 200 });
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    }
+  }
 };
