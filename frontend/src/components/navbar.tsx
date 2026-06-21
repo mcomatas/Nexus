@@ -28,9 +28,27 @@ const LoginLink = () => {
 }
 
 const UserMenu = ({ user }: { user: User }) => {
+  const router = useRouter();
+
   return (
-    <div>
+    <div className="flex flex-row items-center gap-x-3">
       {user.username}
+      <button
+        className="bg-purple-400 text-gray-100 rounded-lg px-3 py-2 cursor-pointer"
+        onClick={async () => {
+          try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+              method: 'POST',
+              credentials: 'include',
+            });
+            if (res.ok) router.refresh();
+          } catch (err) {
+            console.error(err);
+          }
+        }}
+      >
+        Logout
+      </button>
     </div>
   )
 }
