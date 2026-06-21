@@ -4,3 +4,9 @@ export type Game = {
   title: string,
   cover_url: string,
 }
+
+export type User = {
+  id: string,
+  email: string,
+  username: string,
+}
