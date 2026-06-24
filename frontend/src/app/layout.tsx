@@ -12,9 +12,9 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased`}
+      className={`min-h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full bg-linear-to-t from-background-start to-background-end to-40% text-text-primary font-body">
         <NavBar user={user}/>
         <main>{children}</main>
       </body>
