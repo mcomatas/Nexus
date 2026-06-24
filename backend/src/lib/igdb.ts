@@ -98,7 +98,7 @@ export async function searchGamesFromIGDB(query: string | null, limit: number, o
     body: body,
   })
 
-  const count = await countResponse.json();
+  const { count } = await countResponse.json() as { count: number };
 
   return { games, count };
 }

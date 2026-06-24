@@ -26,7 +26,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
           games.map((game) => <GameCard key={game.igdb_id} game={game} />)
         )}
       </div>
-      {Number(limit) < count.count ? <Pagination /> : <></>}
+      {Number(limit) < count ? <Pagination /> : <></>}
     </div>
   );
 }
