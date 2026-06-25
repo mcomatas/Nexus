@@ -39,9 +39,9 @@ export const gameRoutes = {
         const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || PAGE_SIZE, 1), 500);
         const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
 
-        const games = await searchGamesFromIGDB(query, limit, offset);
+        const { games, count } = await searchGamesFromIGDB(query, limit, offset);
 
-        return Response.json(games, { status: 200 });
+        return Response.json({ games, count }, { status: 200 });
 
       } catch (err: any) {
         console.error(err);

@@ -88,7 +88,19 @@ export async function searchGamesFromIGDB(query: string | null, limit: number, o
     }
   });
 
-  return games;
+  const countResponse = await fetch("https://api.igdb.com/v4/games/count", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Client-ID": Bun.env.IGDB_CLIENT_ID!,
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: body,
+  })
+
+  const count = await countResponse.json();
+
+  return { games, count };
 }
 
 // Function to fetch a game from IGDB by its ID
