@@ -14,7 +14,6 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   if (limit) params.set('limit', limit);
   const path = `games/search?${params.toString()}`;
   const { games, count }: { games: Game[], count: number } = await apiFetch(path);
-  console.log(count);
 
   return (
     <div className="flex flex-col items-center mx-auto gap-5 py-5">
