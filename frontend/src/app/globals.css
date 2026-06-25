@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+    --color-background-start: #0f1419;
+    --color-background-mid: #1a1f2e;
+    --color-background-end: #1e2433;
+
+    --color-surface: #252d3a;
+    --color-surface-light: #2d3644;
+    --color-surface-elevated: #3a4556;
+
+    --color-primary: #7b68ee;
+    --color-primary-dark: #4a3799;
+    --color-primary-light: #8b78fe;
+
+    --color-text-primary: #e8edf2;
+    --color-text-primary-light: #f5f7fa;
+    --color-text-secondary: #546e7a;
+    --color-text-muted: #3a4a56;
+
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    --font-heading: var(--font-outfit), system-ui, sans-serif;
+    --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
 @utility bg-navbar-glass {
     background: rgba(15, 20, 25, 0.8);
     backdrop-filter: blur(12px);
