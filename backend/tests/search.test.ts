@@ -3,7 +3,7 @@ import { test, expect, beforeAll, afterAll, beforeEach, mock } from "bun:test";
 // Spy that stands in for the real IGDB call. We assert on what the ROUTE passes
 // to it (query/limit/offset) and that it returns the spy's result as JSON.
 const searchSpy = mock(async (_query: string | null, _limit: number, _offset: number) => {
-  return [{ igdb_id: 1, title: "Zelda", slug: "zelda", cover_url: "https://img/co.jpg" }];
+  return { games: [{ igdb_id: 1, title: "Zelda", slug: "zelda", cover_url: "https://img/co.jpg" }], count: 1 };
 });
 
 // Partial mock: keep the REAL igdb exports and override ONLY the live IGDB call.
@@ -27,9 +27,10 @@ const url = (path: string) => `${server.url}${path}`;
 test("returns the IGDB client's results as JSON", async () => {
   const res = await fetch(url("games/search?query=zelda"));
   expect(res.status).toBe(200);
-  const body = await res.json() as { igdb_id: number; title: string }[];
-  expect(body).toHaveLength(1);
-  expect(body[0]?.title).toBe("Zelda");
+  const body = await res.json() as { games: { igdb_id: number; title: string }[]; count: number };
+  expect(body.games).toHaveLength(1);
+  expect(body.games[0]?.title).toBe("Zelda");
+  expect(body.count).toBe(1);
 });
 
 test("passes the query string through to the IGDB client", async () => {

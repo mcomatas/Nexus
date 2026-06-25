@@ -1,5 +1,5 @@
 import { db } from '../db.ts'
-import { searchGamesFromIGDB, fetchGameFromIGDB, ensureGameCached } from '../lib/igdb.ts'
+import { searchGamesFromIGDB, fetchGameFromIGDB, ensureGameCached, ensureGameCachedBySlug } from '../lib/igdb.ts'
 
 const PAGE_SIZE = 32;
 
@@ -49,7 +49,24 @@ export const gameRoutes = {
       }
     }
   },
-  "/games/:id": {
+  "/games/slug/:slug": {
+    GET: async (req: Bun.BunRequest) => {
+      try {
+        const slug = req.params.slug;
+        if (!slug) return Response.json({ error: "Invalid slug" }, { status: 400 });
+
+        const game = await ensureGameCachedBySlug(slug);
+        if (!game) return Response.json({ error: "Game not found" }, { status: 404 });
+
+        return Response.json(game, { status: 200 });
+
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    }
+  },
+  "/games/id/:id": {
     // Get a single cached game
     GET: async (req: Bun.BunRequest) => {
       try {
@@ -60,8 +77,9 @@ export const gameRoutes = {
 
         if (!game) return Response.json({ error: "Game not found" }, { status: 404 });
 
-        return Response.json(game);
+        return Response.json(game, { status: 200 });
       } catch (err: any) {
+        console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     },
