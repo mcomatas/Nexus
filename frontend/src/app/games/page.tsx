@@ -4,7 +4,7 @@ import { Game } from "@/lib/types";
 import Pagination from "@/components/pagination";
 
 type GamesPageProps = {
-  searchParams: Promise<{ query?: string, limit?: string, offset?: string }>;
+  searchParams: Promise<{ query?: string, limit?: string }>;
 };
 
 export default async function GamesPage({ searchParams }: GamesPageProps) {
@@ -14,6 +14,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   if (limit) params.set('limit', limit);
   const path = `games/search?${params.toString()}`;
   const { games, count }: { games: Game[], count: number } = await apiFetch(path);
+  console.log(count);
 
   return (
     <div className="flex flex-col items-center mx-auto gap-5 py-5">
@@ -26,7 +27,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
           games.map((game) => <GameCard key={game.igdb_id} game={game} />)
         )}
       </div>
-      {Number(limit) < count.count ? <Pagination /> : <></>}
+      {Number(limit) < count ? <Pagination /> : <></>}
     </div>
   );
 }
