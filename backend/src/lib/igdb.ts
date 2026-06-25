@@ -17,6 +17,16 @@ interface IgdbGameRaw {
   first_release_date?: number; // unix Seconds -> release year
 }
 
+export type Game = {
+  igdb_id: number;
+  title: string;
+  description: string | null;
+  cover_url: string | null;
+  artwork_url: string | null;
+  slug: string | null;
+  release_year: number | null;
+}
+
 let cachedToken: string | null = null;
 let expiresAt: number = 0; // Start at 0, nothing cached yet
 
@@ -103,6 +113,34 @@ export async function searchGamesFromIGDB(query: string | null, limit: number, o
   return { games, count };
 }
 
+// Maps IGDB's raw game shape into our normalized game object.
+// Private to this module — igdb.ts is the only place that knows IGDB's format.
+function mapIgdbGame(game: IgdbGameRaw): Game {
+  return {
+    igdb_id: game.id,
+    title: game.name,
+    description: game.storyline ?? game.summary ?? null, // fallback chain
+    cover_url: game.cover
+      ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
+      : null,
+    artwork_url: game.artworks?.[0]
+      ? `https:${game.artworks[0]?.url.replace("t_thumb", "t_1080p")}`
+      : null,
+    slug: game.slug ?? null,
+    release_year: game.first_release_date
+      ? new Date(game.first_release_date * 1000).getUTCFullYear()
+      : null,
+  };
+}
+
+async function insertGame(game: Game) {
+  await db`
+    INSERT INTO games (igdb_id, title, description, cover_url, artwork_url, slug, release_year)
+    VALUES (${game.igdb_id}, ${game.title}, ${game.description}, ${game.cover_url}, ${game.artwork_url}, ${game.slug}, ${game.release_year})
+    ON CONFLICT (igdb_id) DO NOTHING
+  `;
+}
+
 // Function to fetch a game from IGDB by its ID
 export async function fetchGameFromIGDB(igdbId: number) {
   const accessToken = await getAccessToken();
@@ -124,21 +162,7 @@ export async function fetchGameFromIGDB(igdbId: number) {
   const [game] = await response.json() as IgdbGameRaw[];
   if (!game) return null // not on IGDB -> make it 404
 
-  return {
-    igdb_id: game.id,
-    title: game.name,
-    description: game.storyline ?? game.summary ?? null, // fallback chain
-    cover_url: game.cover
-      ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
-      : null,
-    artwork_url: game.artworks?.[0]
-      ? `https:${game.artworks[0]?.url.replace("t_thumb", "t_1080p")}`
-      : null,
-    slug: game.slug ?? null,
-    release_year: game.first_release_date
-      ? new Date(game.first_release_date * 1000).getUTCFullYear()
-      : null,
-  }
+  return mapIgdbGame(game);
 }
 
 // Function to see if game is cached in local DB, if not fetch and insert it
@@ -152,11 +176,52 @@ export async function ensureGameCached(igdbId: number) {
   const game = await fetchGameFromIGDB(igdbId);
   if (!game) return null;
 
-  await db`
-    INSERT INTO games (igdb_id, title, description, cover_url, artwork_url, slug, release_year)
-    VALUES (${game.igdb_id}, ${game.title}, ${game.description}, ${game.cover_url}, ${game.artwork_url}, ${game.slug}, ${game.release_year})
-    ON CONFLICT (igdb_id) DO NOTHING
-  `;
+  await insertGame(game);
+
+  return game;
+}
+
+// Function to fetch a game from IGDB by its slug
+export async function fetchGameFromIGDBBySlug(slug: string) {
+  // slug comes from the URL and is interpolated into the IGDB query body as a
+  // raw string (NOT parameterized like the db`` queries), so validate it first
+  // to block injection and reject junk slugs early.
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
+
+  const accessToken = await getAccessToken();
+
+  const response = await fetch("https://api.igdb.com/v4/games", {
+    method: "POST",
+    headers: {
+      "Client-ID": Bun.env.IGDB_CLIENT_ID!,
+      "Authorization": `Bearer ${accessToken}`,
+    },
+    body: `
+      fields cover.url, slug, name, storyline, summary, artworks.url, first_release_date;
+      where slug = "${slug}";
+    `
+  });
+
+  if (!response.ok) throw new Error(`Response status: ${response.status}`);
+
+  const [game] = await response.json() as IgdbGameRaw[];
+  if (!game) return null // not on IGDB -> make it 404
+
+  return mapIgdbGame(game);
+}
+
+// Function to see if game is cached in local DB by slug, if not fetch and insert it
+export async function ensureGameCachedBySlug(slug: string) {
+  const [row] = await db`
+    SELECT igdb_id, title, description, cover_url, artwork_url, slug, release_year
+    FROM games WHERE slug = ${slug}
+  `
+  if (row) return row;
+
+  const game = await fetchGameFromIGDBBySlug(slug);
+  if (!game) return null;
+
+  await insertGame(game);
 
   return game;
 }
