@@ -1,5 +1,5 @@
 import "./globals.css";
-import NavBar from "@/components/navbar";
+import { NavBar } from "@/components/navbar";
 import { getCurrentUser } from "@/lib/session";
 
 export default async function RootLayout({

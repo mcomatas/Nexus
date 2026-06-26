@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-export default function Pagination() {
+export const Pagination = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

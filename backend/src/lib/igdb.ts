@@ -93,7 +93,7 @@ export async function searchGamesFromIGDB(query: string | null, limit: number, o
       title: game.name,
       slug: game.slug ?? null,
       cover_url: game.cover
-        ? `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`
+        ? `https:${game.cover.url.replace("t_thumb", "t_720p")}`
         : null,
     }
   });
