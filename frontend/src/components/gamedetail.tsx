@@ -5,7 +5,7 @@ import { DetailedGame } from "@/lib/types";
 import { ImageModal } from "@/components/imagemodal";
 import { useState } from "react";
 
-export const GameDetail = ({ game }: { game: DetailedGame }) => {
+export const GameDetail = ({ game, children }: { game: DetailedGame, children?: React.ReactNode }) => {
 
   const [expanded, setExpanded] = useState(false);
   // Heuristic: show the toggle only when the description is long enough to clamp.
@@ -48,6 +48,9 @@ export const GameDetail = ({ game }: { game: DetailedGame }) => {
           >
             {expanded ? "Read less" : "Read more"}
           </button>}
+        </div>
+        <div className="ml-auto justify-between">
+          {children}
         </div>
       </div>
       <div className={`max-w-7/10 mx-auto ${game.artwork_url && "-mt-25"}`}>

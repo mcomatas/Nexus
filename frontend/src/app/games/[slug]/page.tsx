@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { apiFetch } from "@/lib/games";
 import { GameDetail } from "@/components/gamedetail";
+import { ReviewsDetail } from "@/components/reviewsdetails";
 
 type GamePageProps = {
   params: Promise<{ slug: string }>;
@@ -18,7 +18,9 @@ export default async function GamePage({ params }: GamePageProps) {
   return (
     <>
       <div>
-        <GameDetail game={game} />
+        <GameDetail game={game}>
+          <ReviewsDetail reviews={reviews} />
+        </GameDetail>
       </div>
     </>
   );

@@ -11,6 +11,30 @@ export type DetailedGame = Game & {
   release_year: number,
 }
 
+export type Review = {
+  id: string,
+  user_id: string,
+  igdb_id: number,
+  rating: number | null,
+  review_text: string | null,
+  created_at: string,
+  updated_at: string,
+}
+
+export type ReviewsResponse = {
+  stats: {
+    avg_rating: string | null,
+    rating_count: string,
+    total_reviews: string,
+  },
+  reviews: Review[],
+  pagination: {
+    limit: number,
+    offset: number,
+    total: number,
+  },
+}
+
 export type User = {
   id: string,
   email: string,
