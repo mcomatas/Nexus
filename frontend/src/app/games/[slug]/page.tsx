@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/games";
 import { GameDetail } from "@/components/gamedetail";
 import { ReviewsDetail } from "@/components/reviewsdetails";
+import { getCurrentUser } from "@/lib/session";
 
 type GamePageProps = {
   params: Promise<{ slug: string }>;
@@ -12,6 +13,7 @@ export default async function GamePage({ params }: GamePageProps) {
   const game = await apiFetch(path);
   const reviewPath = `games/${game.igdb_id}/reviews`;
   const reviews = await apiFetch(reviewPath);
+  const user = await getCurrentUser();
   console.log(game);
   console.log(reviews);
 
@@ -19,7 +21,7 @@ export default async function GamePage({ params }: GamePageProps) {
     <>
       <div>
         <GameDetail game={game}>
-          <ReviewsDetail reviews={reviews} />
+          <ReviewsDetail reviews={reviews} user={user} />
         </GameDetail>
       </div>
     </>
