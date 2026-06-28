@@ -33,6 +33,7 @@ export type ReviewsResponse = {
     offset: number,
     total: number,
   },
+  user_review: Review | null,
 }
 
 export type User = {

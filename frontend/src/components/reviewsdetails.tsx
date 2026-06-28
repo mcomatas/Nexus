@@ -4,8 +4,10 @@ import { ReviewForm } from "@/components/reviewform"
 export const ReviewsDetail = ({ reviews, user }: { reviews: ReviewsResponse, user: User }) => {
   const { avg_rating, rating_count } = reviews.stats;
   return (
-    <div className="bg-gray-700 p-4 rounded-2xl w-50">
-      <ReviewForm user={user} />
+    <div>
+      <div className="bg-gray-700 p-4 rounded-2xl w-60 mt-10">
+        <ReviewForm user={user} userReview={reviews.user_review} />
+      </div>
       <br />
       <p className="text-sm text-text-secondary">
         {rating_count} ratings

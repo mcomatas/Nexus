@@ -11,9 +11,9 @@ export default async function GamePage({ params }: GamePageProps) {
   const { slug } = await params
   const path = `games/slug/${slug}`;
   const game = await apiFetch(path);
-  const reviewPath = `games/${game.igdb_id}/reviews`;
-  const reviews = await apiFetch(reviewPath);
   const user = await getCurrentUser();
+  const reviewPath = `games/${game.igdb_id}/reviews?userId=${user.id}`;
+  const reviews = await apiFetch(reviewPath);
   console.log(game);
   console.log(reviews);
 

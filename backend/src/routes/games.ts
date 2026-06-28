@@ -156,9 +156,9 @@ export const gameRoutes = {
             COUNT(*)                  AS total_reviews
           FROM game_logs WHERE igdb_id = ${id}
         `;
-        let userReview = null;
+        let user_review = null;
         if (userId) {
-          [userReview] = await db`
+          [user_review] = await db`
             SELECT * FROM game_logs
             WHERE igdb_id = ${id} AND user_id = ${userId}
           `
@@ -168,7 +168,7 @@ export const gameRoutes = {
           stats,
           reviews,
           pagination: { limit, offset, total: Number(stats.total_reviews) },
-          userReview,
+          user_review,
         }, { status: 200 });
       } catch (err: any) {
         console.error(err);
