@@ -3,16 +3,38 @@
 import Link from "next/link"
 import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
-import { User, Review } from "@/lib/types"
+import { User, Review, Game } from "@/lib/types"
 
-function handleSubmit() {
-  console.log("Submitting");
-}
-
-const Form = ({ onClose, userReview }: { onClose: () => void, userReview: Review | null }) => {
+const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: Review | null, game: Game }) => {
   const [rating, setRating] = useState(userReview?.rating);
   const [reviewText, setReviewText] = useState(userReview?.review_text);
   const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/game-logs`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          igdb_id: game.igdb_id,
+          rating: Number(rating),
+          review_text: reviewText,
+        })
+      });
+
+      if (res.ok) onClose();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-xl z-50">
@@ -34,7 +56,7 @@ const Form = ({ onClose, userReview }: { onClose: () => void, userReview: Review
               type="number"
               step="0.1"
               max="10"
-              min="0"
+              min="1"
               value={rating ?? ""}
               onChange={(e) => setRating(Number(e.target.value))}
             />
@@ -59,9 +81,8 @@ const Form = ({ onClose, userReview }: { onClose: () => void, userReview: Review
   )
 }
 
-export const ReviewForm = ({ user, userReview }: { user: User | null, userReview: Review | null }) => {
+export const ReviewForm = ({ user, userReview, game }: { user: User | null, userReview: Review | null, game: Game }) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(user);
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -86,7 +107,7 @@ export const ReviewForm = ({ user, userReview }: { user: User | null, userReview
             Rate Game
           </button>
           {isOpen && (
-            <Form onClose={closeModal} userReview={userReview} />
+            <Form onClose={closeModal} userReview={userReview} game={game} />
           )}
         </>
         :

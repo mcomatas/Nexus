@@ -14,14 +14,12 @@ export default async function GamePage({ params }: GamePageProps) {
   const user = await getCurrentUser();
   const reviewPath = `games/${game.igdb_id}/reviews?userId=${user.id}`;
   const reviews = await apiFetch(reviewPath);
-  console.log(game);
-  console.log(reviews);
 
   return (
     <>
       <div>
         <GameDetail game={game}>
-          <ReviewsDetail reviews={reviews} user={user} />
+          <ReviewsDetail reviews={reviews} user={user} game={game} />
         </GameDetail>
       </div>
     </>

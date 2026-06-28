@@ -35,7 +35,7 @@ export const GameDetail = ({ game, children }: { game: DetailedGame, children?: 
             full={game.cover_url.replace("t_cover_big", "t_1080p")}
           />
         </div>
-        <div className="flex flex-col max-w-3/5 p-4">
+        <div className="flex flex-col max-w-1/2 p-4">
           <h1 className="font-bold text-4xl">{game.title}</h1>
           <p
             className={`text-text-secondary font-semibold mt-10 ${expanded ? "line-clamp-none" : "line-clamp-8"}`}
