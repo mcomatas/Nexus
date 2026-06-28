@@ -141,6 +141,7 @@ export const gameRoutes = {
         const url = new URL(req.url);
         const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 100);
         const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
+        const userId = url.searchParams.get("userId") || null;
 
         const reviews = await db`
           SELECT * FROM game_logs
@@ -155,11 +156,19 @@ export const gameRoutes = {
             COUNT(*)                  AS total_reviews
           FROM game_logs WHERE igdb_id = ${id}
         `;
+        let userReview = null;
+        if (userId) {
+          [userReview] = await db`
+            SELECT * FROM game_logs
+            WHERE igdb_id = ${id} AND user_id = ${userId}
+          `
+        }
 
         return Response.json({
           stats,
           reviews,
-          pagination: { limit, offset, total: Number(stats.total_reviews) }
+          pagination: { limit, offset, total: Number(stats.total_reviews) },
+          userReview,
         }, { status: 200 });
       } catch (err: any) {
         console.error(err);
