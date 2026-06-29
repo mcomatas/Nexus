@@ -113,7 +113,7 @@ export const ReviewForm = ({ user, userReview, game }: { user: User | null, user
   }, [isOpen]);
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center pt-2">
       {user ?
         <>
           <button
