@@ -153,7 +153,7 @@ export const gameRoutes = {
           SELECT
             AVG(rating)::numeric(4,2) AS avg_rating,
             COUNT(rating)             AS rating_count,
-            COUNT(*)                  AS total_reviews
+            COUNT(*)                  AS total_played
           FROM game_logs WHERE igdb_id = ${id}
         `;
         let user_review = null;

@@ -29,7 +29,7 @@ export const GameDetail = ({ game, children }: { game: DetailedGame, children?: 
       <div
         className={`flex flex-row max-w-7/10 min-h-125 mx-auto ${game.artwork_url && "-mt-25"} p-2 relative`}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col shrink-0">
           <ImageModal
             thmb={game.cover_url}
             full={game.cover_url.replace("t_cover_big", "t_1080p")}

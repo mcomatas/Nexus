@@ -25,7 +25,7 @@ export type ReviewsResponse = {
   stats: {
     avg_rating: string | null,
     rating_count: string,
-    total_reviews: string,
+    total_played: string,
   },
   reviews: Review[],
   pagination: {
