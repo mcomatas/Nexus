@@ -53,9 +53,6 @@ export const GameDetail = ({ game, children }: { game: DetailedGame, children?: 
           {children}
         </div>
       </div>
-      <div className={`max-w-7/10 mx-auto ${game.artwork_url && "-mt-25"}`}>
-
-      </div>
     </>
   )
 }
