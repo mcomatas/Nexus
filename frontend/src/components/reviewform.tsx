@@ -4,17 +4,25 @@ import Link from "next/link"
 import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { User, Review, Game } from "@/lib/types"
+import { useRouter } from "next/navigation";
 
 const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: Review | null, game: Game }) => {
-  const [rating, setRating] = useState(userReview?.rating);
+  const [rating, setRating] = useState(userReview?.rating?.toString() ?? "");
   const [reviewText, setReviewText] = useState(userReview?.review_text);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
 
     try {
+      if (Number(rating) < 1  || Number(rating) > 10) {
+        setError("Rating must be 1-10");
+        return;
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/game-logs`, {
         method: "POST",
         credentials: "include",
@@ -28,7 +36,10 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
         })
       });
 
-      if (res.ok) onClose();
+      if (res.ok) {
+        router.refresh();
+        onClose();
+      }
     } catch (err) {
       console.log(err);
     } finally {
@@ -47,7 +58,12 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
             <IoClose />
           </button>
         </div>
-        <div className="flex flex-row items-center justify-center space-x-20 p-5">
+        <div className="flex flex-col items-center justify-center space-x-20 p-5">
+          {error &&
+            <p className="text-red-400 font-semibold py-2">
+              {error}
+            </p>
+          }
           <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
             <input
               className="bg-background-mid rounded-lg p-2.5 border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
@@ -58,7 +74,7 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
               max="10"
               min="1"
               value={rating ?? ""}
-              onChange={(e) => setRating(Number(e.target.value))}
+              onChange={(e) => setRating(e.target.value)}
             />
             <textarea
               className="bg-background-mid rounded-lg h-90 w-120 p-2.5 text-sm border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all duration-300 resize-none"
