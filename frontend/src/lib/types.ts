@@ -14,9 +14,10 @@ export type DetailedGame = Game & {
 export type Review = {
   id: string,
   user_id: string,
+  username: string,
   igdb_id: number,
-  rating: number | null,
-  review_text: string | null,
+  rating: number | null, // Numeric serializes to string. Null when played-only
+  review_text: string | null, // Null when played-only
   created_at: string,
   updated_at: string,
 }

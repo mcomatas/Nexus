@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export const AddRemoveGameButton = ({ game, userReview }: { game: Game, userReview: Review | null }) => {
-  console.log(userReview);
   const [played, setPlayed] = useState(userReview !== undefined);
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -30,8 +29,6 @@ export const AddRemoveGameButton = ({ game, userReview }: { game: Game, userRevi
       setPending(false);
     }
   }
-
-  console.log(played);
 
   return (
     <button

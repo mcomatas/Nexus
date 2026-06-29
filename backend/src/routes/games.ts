@@ -144,9 +144,11 @@ export const gameRoutes = {
         const userId = url.searchParams.get("userId") || null;
 
         const reviews = await db`
-          SELECT * FROM game_logs
-          WHERE igdb_id = ${id}
-          ORDER BY created_at DESC
+          SELECT gl.id, gl.igdb_id, gl.rating, gl.review_text, gl.created_at, gl.updated_at, gl.user_id, u.username
+          FROM game_logs gl
+          JOIN users u ON u.id = gl.user_id
+          WHERE gl.igdb_id = ${id} AND (gl.rating IS NOT NULL OR gl.review_text IS NOT NULL)
+          ORDER BY gl.created_at DESC
           LIMIT ${limit} OFFSET ${offset}
         `;
         const [stats] = await db`
@@ -159,8 +161,10 @@ export const gameRoutes = {
         let user_review = null;
         if (userId) {
           [user_review] = await db`
-            SELECT * FROM game_logs
-            WHERE igdb_id = ${id} AND user_id = ${userId}
+            SELECT gl.id, gl.igdb_id, gl.rating, gl.review_text, gl.created_at, gl.updated_at, gl.user_id, u.username
+            FROM game_logs gl
+            JOIN users u ON u.id = gl.user_id
+            WHERE gl.igdb_id = ${id} AND gl.user_id = ${userId}
           `
         }
 

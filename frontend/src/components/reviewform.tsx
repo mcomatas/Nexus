@@ -118,7 +118,7 @@ export const ReviewForm = ({ user, userReview, game }: { user: User | null, user
         <>
           <button
             onClick={openModal}
-            className="cursor-pointer"
+            className="font-semibold hover:text-gray-400 cursor-pointer"
           >
             Rate Game
           </button>
