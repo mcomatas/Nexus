@@ -2,18 +2,16 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-export default function Pagination() {
+export const Pagination = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const limit = Math.max(Number(searchParams.get('limit')), 32);
-  const query = searchParams.get('query');
 
   function handleClick() {
     const params = new URLSearchParams(searchParams);
-    if (query) params.set('query', query);
     params.set('limit', String(limit + 32));
-    router.push(`${pathname}?${params.toString()}`)
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
   return (

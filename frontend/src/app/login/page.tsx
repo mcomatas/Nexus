@@ -94,7 +94,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-primary/80 hover:bg-primary px-4 py-2 text-sm font-medium transition disabled:opacity-50"
+          className="rounded-md bg-primary/80 hover:bg-primary px-4 py-2 text-sm font-medium transition disabled:opacity-50 cursor-pointer"
         >
           {loading ? "Please wait…" : isRegister ? "Sign up" : "Log in"}
         </button>
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
       <button
         onClick={toggle}
-        className="mt-4 text-sm text-text-primary/70 hover:text-text-primary transition"
+        className="mt-4 text-sm text-text-primary/70 hover:text-text-primary transition hover:underline cursor-pointer"
       >
         {isRegister
           ? "Already have an account? Log in"

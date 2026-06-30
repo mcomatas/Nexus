@@ -25,26 +25,46 @@ test("GET /games returns an empty array when nothing is cached", async () => {
   expect(await res.json()).toEqual([]);
 });
 
-test("GET /games/:id returns the cached game", async () => {
+test("GET /games/id/:id returns the cached game", async () => {
   await seedGame(1942, { title: "Witcher 3", slug: "witcher-3" });
 
-  const res = await fetch(url("games/1942"));
+  const res = await fetch(url("games/id/1942"));
   expect(res.status).toBe(200);
   const game = await res.json() as { igdb_id: number; title: string };
   expect(game.igdb_id).toBe(1942);
   expect(game.title).toBe("Witcher 3");
 });
 
-test("GET /games/:id returns 404 when the game isn't cached", async () => {
-  const res = await fetch(url("games/9999"));
+test("GET /games/id/:id returns 404 when the game isn't cached", async () => {
+  const res = await fetch(url("games/id/9999"));
   expect(res.status).toBe(404);
   expect(await res.json()).toEqual({ error: "Game not found" });
 });
 
-test("GET /games/:id rejects a non-numeric id", async () => {
-  const res = await fetch(url("games/abc"));
+test("GET /games/id/:id rejects a non-numeric id", async () => {
+  const res = await fetch(url("games/id/abc"));
   expect(res.status).toBe(400);
   expect(await res.json()).toEqual({ error: "Invalid id" });
+});
+
+test("GET /games/slug/:slug returns the cached game", async () => {
+  await seedGame(1942, { title: "Witcher 3", slug: "witcher-3" });
+
+  const res = await fetch(url("games/slug/witcher-3"));
+  expect(res.status).toBe(200);
+  const game = await res.json() as { igdb_id: number; slug: string; title: string };
+  expect(game.igdb_id).toBe(1942);
+  expect(game.slug).toBe("witcher-3");
+  expect(game.title).toBe("Witcher 3");
+});
+
+test("GET /games/slug/:slug returns 404 for an unknown slug", async () => {
+  // An invalid-format slug (uppercase) is rejected by the regex guard in
+  // fetchGameFromIGDBBySlug, so it 404s WITHOUT a live IGDB call — keeps the
+  // test offline + deterministic (games tests intentionally don't mock IGDB).
+  const res = await fetch(url("games/slug/NotARealSlug"));
+  expect(res.status).toBe(404);
+  expect(await res.json()).toEqual({ error: "Game not found" });
 });
 
 test("POST /games returns an already-cached game (no IGDB call)", async () => {

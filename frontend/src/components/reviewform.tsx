@@ -1,0 +1,139 @@
+"use client";
+
+import Link from "next/link"
+import { useState, useEffect } from "react";
+import { IoClose } from "react-icons/io5";
+import { User, Review, Game } from "@/lib/types"
+import { useRouter } from "next/navigation";
+
+const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: Review | null, game: Game }) => {
+  const [rating, setRating] = useState(userReview?.rating?.toString() ?? "");
+  const [reviewText, setReviewText] = useState(userReview?.review_text);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitting(true);
+
+    try {
+      if (Number(rating) < 1  || Number(rating) > 10) {
+        setError("Rating must be 1-10");
+        return;
+      }
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/game-logs`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          igdb_id: game.igdb_id,
+          rating: Number(rating),
+          review_text: reviewText,
+        })
+      });
+
+      if (res.ok) {
+        router.refresh();
+        onClose();
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-xl z-50">
+      <div className="bg-surface-elevated rounded-lg h-150 w-200 flex flex-col shadow-shadow-elevated border border-text-secondary/50">
+        <div className="flex ml-auto">
+          <button
+            onClick={onClose}
+            className="text-2xl text-text-secondary p-2 pr-5 hover:text-text-primary cursor-pointer transition-colors"
+          >
+            <IoClose />
+          </button>
+        </div>
+        <div className="flex flex-col items-center justify-center space-x-20 p-5">
+          {error &&
+            <p className="text-red-400 font-semibold py-2">
+              {error}
+            </p>
+          }
+          <form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
+            <input
+              className="bg-background-mid rounded-lg p-2.5 border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all"
+              name="score"
+              placeholder="Score"
+              type="number"
+              step="0.1"
+              max="10"
+              min="1"
+              value={rating ?? ""}
+              onChange={(e) => setRating(e.target.value)}
+            />
+            <textarea
+              className="bg-background-mid rounded-lg h-90 w-120 p-2.5 text-sm border border-primary/50 text-text-primary placeholder:text-text-secondary focus:outline-2 focus:outline-primary-light/70 focus:border-transparent transition-all duration-300 resize-none"
+              placeholder="Write your review here..."
+              name="review"
+              value={reviewText ?? ""}
+              onChange={(e) => setReviewText(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="bg-primary hover:bg-primary-dark text-white w-30 mx-auto rounded-lg py-2.5 font-semibold transition-all hover:shadow-lg cursor-pointer disabled:opacity-50"
+            >
+              {submitting ? "Saving..." : "Save"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const ReviewForm = ({ user, userReview, game }: { user: User | null, userReview: Review | null, game: Game }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isOpen]);
+
+  return (
+    <div className="flex justify-center pt-2">
+      {user ?
+        <>
+          <button
+            onClick={openModal}
+            className="font-semibold hover:text-gray-400 cursor-pointer"
+          >
+            Rate Game
+          </button>
+          {isOpen && (
+            <Form onClose={closeModal} userReview={userReview} game={game} />
+          )}
+        </>
+        :
+        <Link
+          className="text-md whitespace-nowrap cursor-pointer"
+          href="/login"
+        >
+          Sign in to log, rate, or review
+        </Link>
+      }
+    </div>
+  )
+}

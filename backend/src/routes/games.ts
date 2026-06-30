@@ -1,5 +1,5 @@
 import { db } from '../db.ts'
-import { searchGamesFromIGDB, fetchGameFromIGDB, ensureGameCached } from '../lib/igdb.ts'
+import { searchGamesFromIGDB, fetchGameFromIGDB, ensureGameCached, ensureGameCachedBySlug } from '../lib/igdb.ts'
 
 const PAGE_SIZE = 32;
 
@@ -49,7 +49,24 @@ export const gameRoutes = {
       }
     }
   },
-  "/games/:id": {
+  "/games/slug/:slug": {
+    GET: async (req: Bun.BunRequest) => {
+      try {
+        const slug = req.params.slug;
+        if (!slug) return Response.json({ error: "Invalid slug" }, { status: 400 });
+
+        const game = await ensureGameCachedBySlug(slug);
+        if (!game) return Response.json({ error: "Game not found" }, { status: 404 });
+
+        return Response.json(game, { status: 200 });
+
+      } catch (err: any) {
+        console.error(err);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
+      }
+    }
+  },
+  "/games/id/:id": {
     // Get a single cached game
     GET: async (req: Bun.BunRequest) => {
       try {
@@ -60,8 +77,9 @@ export const gameRoutes = {
 
         if (!game) return Response.json({ error: "Game not found" }, { status: 404 });
 
-        return Response.json(game);
+        return Response.json(game, { status: 200 });
       } catch (err: any) {
+        console.error(err);
         return Response.json({ error: "Internal server error" }, { status: 500 });
       }
     },
@@ -123,25 +141,38 @@ export const gameRoutes = {
         const url = new URL(req.url);
         const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 100);
         const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
+        const userId = url.searchParams.get("userId") || null;
 
         const reviews = await db`
-          SELECT * FROM game_logs
-          WHERE igdb_id = ${id}
-          ORDER BY created_at DESC
+          SELECT gl.id, gl.igdb_id, gl.rating, gl.review_text, gl.created_at, gl.updated_at, gl.user_id, u.username
+          FROM game_logs gl
+          JOIN users u ON u.id = gl.user_id
+          WHERE gl.igdb_id = ${id} AND (gl.rating IS NOT NULL OR gl.review_text IS NOT NULL)
+          ORDER BY gl.created_at DESC
           LIMIT ${limit} OFFSET ${offset}
         `;
         const [stats] = await db`
           SELECT
             AVG(rating)::numeric(4,2) AS avg_rating,
             COUNT(rating)             AS rating_count,
-            COUNT(*)                  AS total_reviews
+            COUNT(*)                  AS total_played
           FROM game_logs WHERE igdb_id = ${id}
         `;
+        let user_review = null;
+        if (userId) {
+          [user_review] = await db`
+            SELECT gl.id, gl.igdb_id, gl.rating, gl.review_text, gl.created_at, gl.updated_at, gl.user_id, u.username
+            FROM game_logs gl
+            JOIN users u ON u.id = gl.user_id
+            WHERE gl.igdb_id = ${id} AND gl.user_id = ${userId}
+          `
+        }
 
         return Response.json({
           stats,
           reviews,
-          pagination: { limit, offset, total: Number(stats.total_reviews) }
+          pagination: { limit, offset, total: Number(stats.total_reviews) },
+          user_review,
         }, { status: 200 });
       } catch (err: any) {
         console.error(err);

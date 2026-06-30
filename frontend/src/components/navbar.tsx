@@ -78,7 +78,7 @@ function SearchForm() {
   );
 }
 
-export default function NavBar({ user }: { user: User | null }) {
+export const NavBar = ({ user }: { user: User | null }) => {
   return (
     <div className="w-full bg-navbar-glass sticky top-0 z-50">
       <div className="flex justify-between items-center max-w-4xl mx-auto p-4">

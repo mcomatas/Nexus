@@ -1,10 +1,10 @@
 import { apiFetch } from "@/lib/games";
 import { GameCard } from "@/components/gamecard";
 import { Game } from "@/lib/types";
-import Pagination from "@/components/pagination";
+import { Pagination } from "@/components/pagination";
 
 type GamesPageProps = {
-  searchParams: Promise<{ query?: string, limit?: string, offset?: string }>;
+  searchParams: Promise<{ query?: string, limit?: string }>;
 };
 
 export default async function GamesPage({ searchParams }: GamesPageProps) {
