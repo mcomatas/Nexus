@@ -171,7 +171,7 @@ export const gameRoutes = {
         return Response.json({
           stats,
           reviews,
-          pagination: { limit, offset, total: Number(stats.total_reviews) },
+          pagination: { limit, offset, total: Number(stats.total_played) },
           user_review,
         }, { status: 200 });
       } catch (err: any) {

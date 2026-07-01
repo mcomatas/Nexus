@@ -8,10 +8,22 @@ beforeEach(() => resetDb());
 
 const url = (path: string) => `${server.url}${path}`;
 
+type Review = {
+  id: string,
+  user_id: string,
+  username: string,
+  igdb_id: number,
+  rating: number | null, // Numeric serializes to string. Null when played-only
+  review_text: string | null, // Null when played-only
+  created_at: string,
+  updated_at: string,
+}
+
 type ReviewsResponse = {
-  stats: { avg_rating: string | null; rating_count: string; total_reviews: string };
-  reviews: unknown[];
+  stats: { avg_rating: string | null; rating_count: string; total_played: string };
+  reviews: Review[];
   pagination: { limit: number; offset: number; total: number };
+  user_review: Review | null,
 };
 
 test("stats average the ratings and exclude null (text-only) ratings", async () => {
@@ -27,7 +39,7 @@ test("stats average the ratings and exclude null (text-only) ratings", async () 
 
   expect(Number(body.stats.avg_rating)).toBeCloseTo(8);  // null rating doesn't drag it down
   expect(Number(body.stats.rating_count)).toBe(3);       // 3 actual ratings
-  expect(Number(body.stats.total_reviews)).toBe(4);      // 4 rows total (incl. text-only)
+  expect(Number(body.stats.total_played)).toBe(4);      // 4 rows total (incl. text-only)
   expect(body.reviews.length).toBe(4);                   // text-only review still appears in the list
   expect(body.pagination.total).toBe(4);
 });
@@ -54,7 +66,7 @@ test("a game with no logs returns empty reviews and zeroed stats", async () => {
   expect(body.reviews).toEqual([]);
   expect(body.stats.avg_rating).toBeNull();           // AVG over no rows is NULL
   expect(Number(body.stats.rating_count)).toBe(0);
-  expect(Number(body.stats.total_reviews)).toBe(0);
+  expect(Number(body.stats.total_played)).toBe(0);
   expect(body.pagination.total).toBe(0);
 });
 
@@ -67,7 +79,7 @@ test("pagination limits the page but stats stay over the full set", async () => 
 
   expect(body.reviews.length).toBe(2);                 // page is limited to 2
   expect(body.pagination.limit).toBe(2);
-  expect(Number(body.stats.total_reviews)).toBe(5);    // stats run over the full set, not the page
+  expect(Number(body.stats.total_played)).toBe(5);    // stats run over the full set, not the page
   expect(body.pagination.total).toBe(5);
 });
 
