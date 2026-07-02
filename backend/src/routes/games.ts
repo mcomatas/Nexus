@@ -155,6 +155,7 @@ export const gameRoutes = {
           SELECT
             AVG(rating)::numeric(4,2) AS avg_rating,
             COUNT(rating)             AS rating_count,
+            COUNT(*) FILTER (WHERE rating IS NOT NULL OR review_text IS NOT NULL) AS review_count,
             COUNT(*)                  AS total_played
           FROM game_logs WHERE igdb_id = ${id}
         `;

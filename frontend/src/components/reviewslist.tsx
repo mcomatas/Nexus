@@ -1,7 +1,6 @@
 import { Review } from "@/lib/types";
 
 export const ReviewList = ({ reviews }: { reviews: Review[] }) => {
-  console.log(reviews);
   const reviewMap = reviews.map((review) => (
     <div
       key={review.id}

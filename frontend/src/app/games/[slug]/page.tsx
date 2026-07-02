@@ -15,6 +15,7 @@ export default async function GamePage({ params }: GamePageProps) {
   const user = await getCurrentUser();
   const reviewPath = `games/${game.igdb_id}/reviews${user ? `?userId=${user.id}` : ""}`;
   const reviews = await apiFetch(reviewPath);
+  console.log(reviews);
 
   return (
     <>

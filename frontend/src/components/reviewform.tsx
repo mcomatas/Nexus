@@ -18,7 +18,7 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
     setSubmitting(true);
 
     try {
-      if (Number(rating) < 1  || Number(rating) > 10) {
+      if (rating && (Number(rating) < 1  || Number(rating) > 10)) {
         setError("Rating must be 1-10");
         return;
       }
@@ -31,8 +31,8 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
         },
         body: JSON.stringify({
           igdb_id: game.igdb_id,
-          rating: Number(rating),
-          review_text: reviewText,
+          rating: rating === "" ? null : Number(rating),
+          review_text: reviewText || null,
         })
       });
 
@@ -73,7 +73,7 @@ const Form = ({ onClose, userReview, game }: { onClose: () => void, userReview: 
               step="0.1"
               max="10"
               min="1"
-              value={rating ?? ""}
+              value={rating}
               onChange={(e) => setRating(e.target.value)}
             />
             <textarea
