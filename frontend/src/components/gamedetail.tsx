@@ -19,7 +19,8 @@ export const GameDetail = ({ game, children }: { game: DetailedGame, children?: 
           <Image
             src={game.artwork_url}
             alt={game.slug}
-            layout="fill"
+            fill
+            loading="eager"
             style={{ objectFit: "cover", objectPosition: "center 20%" }}
             quality={100}
           />

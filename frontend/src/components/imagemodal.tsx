@@ -50,7 +50,7 @@ export const ImageModal = ({ thmb, full }: { thmb: string, full: string }) => {
                         height={700}
                         width={500}
                         quality={100}
-                        className="rounded-lg"
+                        className="rounded-lg w-auto h-auto max-h-[80vh] max-w-[80vw]"
                     />
                 </div>
             )}
